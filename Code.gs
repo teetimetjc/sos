@@ -4,14 +4,35 @@
 // ============================================================
 
 var SECRET = PropertiesService.getScriptProperties().getProperty('SECRET') || '';
-var SHEET_NAME = 'WorkOrders';
+var SHEET_NAME   = 'WorkOrders';
+var CALLIN_SHEET = 'CallIns';
+
+// WorkOrders tab columns (A1:AJ1, 36 headers):
+//   ID | WO Number | Type | Date | Time | Bill To | Job | Phone 1 | Phone 2 |
+//   Pumpout Ordered | Technician | Pump Type | Year Built | Water Level | Drainfield |
+//   Scum | Sludge | Tank Sound | Compartment | Outlet T | Material | Trap Location |
+//   Directions | Schedule | LPO | Next Pump | Special Notes | Line Items JSON | Total |
+//   Billing | Terms | Check Num | Payment Amt | Comments | Signed By | Saved At
+
+// CallIns tab columns (A1:AE1, 31 headers):
+//   ID | CI Number | Rep | Date | Scheduled Date | Scheduled Time |
+//   Bill To Name | Bill To Address | Bill To Phone |
+//   Job Address | Job Phone | Email |
+//   Reason | Reason Detail | Beds | Baths | Year Built | LPO |
+//   Lift Station | ATU | Vac Job | Tank Count | Directions |
+//   Technicians | Extra Time | Price | Overfull | Field Runback |
+//   Payment Type | Billing Type | Saved At
 
 // --------------- HTTP entry points ---------------
 
 function doGet(e) {
   var params = e && e.parameter ? e.parameter : {};
   var action = params.action || '';
+  var sheet  = params.sheet  || '';
 
+  if (action === 'list' && sheet === 'callins') {
+    return jsonResponse(listCallIns(params.secret));
+  }
   if (action === 'list') {
     return jsonResponse(listOrders(params.secret));
   }
@@ -34,6 +55,10 @@ function doPost(e) {
     if (payload.secret !== SECRET) {
       return jsonResponse({ ok: false, error: 'Unauthorized' });
     }
+    if (payload.sheetType === 'callin') {
+      var ciNum = saveCallIn(payload);
+      return jsonResponse({ ok: true, ciNumber: ciNum });
+    }
     var woNum = saveOrder(payload);
     return jsonResponse({ ok: true, woNumber: woNum });
   } catch (err) {
@@ -41,16 +66,16 @@ function doPost(e) {
   }
 }
 
-// --------------- Data helpers ---------------
+// --------------- Work order helpers ---------------
 
 function saveOrder(data) {
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var ss    = SpreadsheetApp.getActiveSpreadsheet();
   var sheet = ss.getSheetByName(SHEET_NAME);
   var woNum = nextWoNumber();
-  var id = Utilities.getUuid();
-  var now = new Date();
+  var id    = Utilities.getUuid();
+  var now   = new Date();
 
-  var row = [
+  sheet.appendRow([
     id,
     woNum,
     data.type || '',
@@ -87,28 +112,24 @@ function saveOrder(data) {
     data.comments || '',
     data.signedBy || '',
     now.toISOString()
-  ];
-
-  sheet.appendRow(row);
+  ]);
   return woNum;
 }
 
 function listOrders(secret) {
   if (secret !== SECRET) return { ok: false, error: 'Unauthorized' };
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var ss    = SpreadsheetApp.getActiveSpreadsheet();
   var sheet = ss.getSheetByName(SHEET_NAME);
-  var data = sheet.getDataRange().getValues();
+  var data  = sheet.getDataRange().getValues();
   if (data.length < 2) return { ok: true, orders: [] };
 
   var headers = data[0];
-  var orders = [];
+  var orders  = [];
   for (var i = data.length - 1; i >= 1; i--) {
     var obj = {};
-    for (var j = 0; j < headers.length; j++) {
-      obj[headers[j]] = data[i][j];
-    }
+    for (var j = 0; j < headers.length; j++) obj[headers[j]] = data[i][j];
     orders.push(obj);
-    if (orders.length >= 100) break; // cap at 100 most recent
+    if (orders.length >= 100) break;
   }
   return { ok: true, orders: orders };
 }
@@ -117,21 +138,20 @@ function lookupCustomer(phone, secret) {
   if (secret !== SECRET) return { ok: false, error: 'Unauthorized' };
   if (!phone) return { ok: false, error: 'No phone provided' };
 
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var ss    = SpreadsheetApp.getActiveSpreadsheet();
   var sheet = ss.getSheetByName(SHEET_NAME);
-  var data = sheet.getDataRange().getValues();
+  var data  = sheet.getDataRange().getValues();
   if (data.length < 2) return { ok: true, customer: null };
 
   var headers = data[0];
   var idx = {};
   headers.forEach(function(h, i) { idx[h] = i; });
 
-  // Search newest-first
   for (var i = data.length - 1; i >= 1; i--) {
     var row = data[i];
-    var p1 = String(row[idx['Phone 1']] || '').replace(/\D/g, '');
-    var p2 = String(row[idx['Phone 2']] || '').replace(/\D/g, '');
-    var q  = phone.replace(/\D/g, '');
+    var p1  = String(row[idx['Phone 1']] || '').replace(/\D/g, '');
+    var p2  = String(row[idx['Phone 2']] || '').replace(/\D/g, '');
+    var q   = phone.replace(/\D/g, '');
     if (q && (p1 === q || p2 === q)) {
       return {
         ok: true,
@@ -155,17 +175,94 @@ function lookupCustomer(phone, secret) {
   return { ok: true, customer: null };
 }
 
-// --------------- WO number sequencing ---------------
+// --------------- Call-in helpers ---------------
+
+function saveCallIn(data) {
+  var ss    = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getSheetByName(CALLIN_SHEET);
+  var ciNum = nextCiNumber();
+  var id    = Utilities.getUuid();
+  var now   = new Date();
+
+  sheet.appendRow([
+    id,
+    ciNum,
+    data.rep || '',
+    data.date || '',
+    data.scheduledDate || '',
+    data.scheduledTime || '',
+    data.billToName || '',
+    data.billToAddress || '',
+    data.billToPhone || '',
+    data.jobAddress || '',
+    data.jobPhone || '',
+    data.email || '',
+    data.reason || '',
+    data.reasonDetail || '',
+    data.beds || '',
+    data.baths || '',
+    data.yearBuilt || '',
+    data.lpo || '',
+    data.liftStation ? 'Yes' : '',
+    data.atu         ? 'Yes' : '',
+    data.vacJob      ? 'Yes' : '',
+    data.tankCount || '',
+    data.directions || '',
+    data.technicians || '',
+    data.extraTime || '',
+    data.price || '',
+    data.overfull    ? 'Yes' : '',
+    data.fieldRunback ? 'Yes' : '',
+    data.paymentType || '',
+    data.billingType || '',
+    now.toISOString()
+  ]);
+  return ciNum;
+}
+
+function listCallIns(secret) {
+  if (secret !== SECRET) return { ok: false, error: 'Unauthorized' };
+  var ss    = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getSheetByName(CALLIN_SHEET);
+  var data  = sheet.getDataRange().getValues();
+  if (data.length < 2) return { ok: true, callins: [] };
+
+  var headers = data[0];
+  var callins = [];
+  for (var i = data.length - 1; i >= 1; i--) {
+    var obj = {};
+    for (var j = 0; j < headers.length; j++) obj[headers[j]] = data[i][j];
+    callins.push(obj);
+    if (callins.length >= 50) break;
+  }
+  return { ok: true, callins: callins };
+}
+
+// --------------- Number sequencing ---------------
 
 function nextWoNumber() {
   var lock = LockService.getScriptLock();
   lock.waitLock(10000);
   try {
     var props = PropertiesService.getScriptProperties();
-    var last = parseInt(props.getProperty('LAST_WO') || '0', 10);
-    var next = last + 1;
+    var last  = parseInt(props.getProperty('LAST_WO') || '0', 10);
+    var next  = last + 1;
     props.setProperty('LAST_WO', String(next));
     return 'WO-' + String(next).padStart(5, '0');
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+function nextCiNumber() {
+  var lock = LockService.getScriptLock();
+  lock.waitLock(10000);
+  try {
+    var props = PropertiesService.getScriptProperties();
+    var last  = parseInt(props.getProperty('LAST_CI') || '0', 10);
+    var next  = last + 1;
+    props.setProperty('LAST_CI', String(next));
+    return 'CI-' + String(next).padStart(5, '0');
   } finally {
     lock.releaseLock();
   }

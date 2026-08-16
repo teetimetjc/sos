@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>S.O.S. Septic Work Order</title>
+<title>S.O.S. Septic Work Orders</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
 /* ── Reset & base ── */
@@ -15,13 +15,12 @@ button{cursor:pointer}
 
 /* ── Layout ── */
 #app{max-width:700px;margin:0 auto;padding:8px}
-header{background:#1a4a7a;color:#fff;padding:12px 16px;border-radius:8px 8px 0 0;display:flex;align-items:center;justify-content:space-between}
+header{background:#1a4a7a;color:#fff;padding:12px 16px;border-radius:8px 8px 0 0}
 header h1{font-size:1.1rem;font-weight:700;letter-spacing:.3px}
-.header-btns{display:flex;gap:8px}
 
-/* ── Tabs ── */
-.tab-bar{display:flex;background:#fff;border-bottom:2px solid #1a4a7a}
-.tab-btn{flex:1;padding:10px 4px;border:none;background:transparent;font-weight:600;font-size:.85rem;color:#555;transition:all .15s}
+/* ── Tab bar ── */
+.tab-bar{display:flex;background:#fff;border-bottom:2px solid #1a4a7a;margin-bottom:2px}
+.tab-btn{flex:1;padding:10px 4px;border:none;background:transparent;font-weight:600;font-size:.82rem;color:#555;transition:all .15s;white-space:nowrap}
 .tab-btn.active{color:#1a4a7a;border-bottom:3px solid #1a4a7a;margin-bottom:-2px}
 
 /* ── Cards / sections ── */
@@ -37,11 +36,7 @@ header h1{font-size:1.1rem;font-weight:700;letter-spacing:.3px}
 .field textarea{min-height:60px;resize:vertical}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
-
-/* ── Type selector ── */
-.type-toggle{display:flex;gap:8px;margin-bottom:12px}
-.type-btn{flex:1;padding:10px;border:2px solid #ccc;border-radius:8px;background:#fff;font-weight:700;font-size:.9rem;color:#555;transition:all .15s}
-.type-btn.active{border-color:#1a4a7a;background:#1a4a7a;color:#fff}
+.row4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px}
 
 /* ── Lookup ── */
 .lookup-row{display:flex;gap:8px;margin-bottom:10px}
@@ -71,28 +66,44 @@ header h1{font-size:1.1rem;font-weight:700;letter-spacing:.3px}
 .sig-controls button{padding:6px 14px;border:none;border-radius:6px;font-weight:600;font-size:.82rem}
 #clearSig{background:#f0f0f0;color:#555}
 
+/* ── Checkbox group (tech multi-select, equipment flags) ── */
+.check-group{display:flex;flex-wrap:wrap;gap:6px;padding:8px;border:1.5px solid #ccc;border-radius:6px;background:#fafafa;max-height:150px;overflow-y:auto}
+.check-group label{display:flex;align-items:center;gap:5px;font-size:.82rem;font-weight:500;color:#333;white-space:nowrap;padding:3px 8px;background:#fff;border:1px solid #ddd;border-radius:14px;cursor:pointer;transition:background .1s}
+.check-group label:hover{background:#eaf0fb;border-color:#b0c4de}
+.check-group input[type=checkbox]:checked + span{color:#1a4a7a;font-weight:700}
+.check-group label:has(input:checked){background:#ddeeff;border-color:#2980b9}
+.flag-row{display:flex;gap:12px;flex-wrap:wrap;padding:6px 0}
+.flag-row label{display:flex;align-items:center;gap:6px;font-size:.88rem;font-weight:600;color:#333;cursor:pointer}
+
 /* ── Buttons ── */
 .btn-primary{display:block;width:100%;padding:13px;background:#1a4a7a;color:#fff;border:none;border-radius:8px;font-weight:700;font-size:1rem;margin-top:4px;transition:background .15s}
 .btn-primary:hover{background:#15396b}
 .btn-primary:disabled{background:#8aabb8;cursor:not-allowed}
 .btn-secondary{padding:8px 16px;background:#e8edf4;color:#1a4a7a;border:1.5px solid #b0c4de;border-radius:6px;font-weight:600;font-size:.85rem}
+.btn-green{display:block;width:100%;padding:13px;background:#27ae60;color:#fff;border:none;border-radius:8px;font-weight:700;font-size:1rem;margin-top:4px;transition:background .15s}
+.btn-green:hover{background:#229954}
+.btn-green:disabled{background:#82c6a0;cursor:not-allowed}
 
-/* ── Error banner ── */
-#errorBanner{background:#fde8e8;border:1.5px solid #e74c3c;border-radius:8px;padding:10px 14px;margin-bottom:10px;display:none}
-#errorBanner ul{margin-left:16px;font-size:.85rem;color:#c0392b}
-#successBanner{background:#e8f8e8;border:1.5px solid #27ae60;border-radius:8px;padding:10px 14px;margin-bottom:10px;display:none;font-size:.9rem;color:#1a6b1a;font-weight:600}
+/* ── Banners ── */
+.error-banner{background:#fde8e8;border:1.5px solid #e74c3c;border-radius:8px;padding:10px 14px;margin-bottom:10px;display:none}
+.error-banner ul{margin-left:16px;font-size:.85rem;color:#c0392b}
+.success-banner{background:#e8f8e8;border:1.5px solid #27ae60;border-radius:8px;padding:10px 14px;margin-bottom:10px;display:none;font-size:.9rem;color:#1a6b1a;font-weight:600}
 
-/* ── History ── */
-#historyList{margin-top:8px}
-.hist-card{background:#fff;border-radius:8px;padding:12px 14px;margin-bottom:8px;box-shadow:0 1px 3px rgba(0,0,0,.08);display:flex;flex-direction:column;gap:4px}
-.hist-card .wo-num{font-weight:700;color:#1a4a7a;font-size:.9rem}
-.hist-card .wo-meta{font-size:.78rem;color:#666}
-.hist-card .wo-actions{display:flex;gap:8px;margin-top:6px}
-.hist-card .wo-actions button{padding:5px 12px;font-size:.8rem;font-weight:600;border:none;border-radius:5px}
+/* ── History / Call-In list ── */
+.list-card{background:#fff;border-radius:8px;padding:12px 14px;margin-bottom:8px;box-shadow:0 1px 3px rgba(0,0,0,.08);display:flex;flex-direction:column;gap:4px}
+.list-card .rec-num{font-weight:700;color:#1a4a7a;font-size:.9rem}
+.list-card .rec-meta{font-size:.78rem;color:#666}
+.list-card .rec-actions{display:flex;gap:8px;margin-top:6px}
+.list-card .rec-actions button{padding:5px 12px;font-size:.8rem;font-weight:600;border:none;border-radius:5px}
 .btn-pdf{background:#2980b9;color:#fff}
-.btn-view{background:#e8edf4;color:#1a4a7a;border:1px solid #b0c4de}
-#historySearch{width:100%;padding:9px 10px;border:1.5px solid #ccc;border-radius:6px;font-size:.9rem;margin-bottom:10px}
-#histLoading{font-size:.85rem;color:#888;padding:12px 0;text-align:center}
+.search-input{width:100%;padding:9px 10px;border:1.5px solid #ccc;border-radius:6px;font-size:.9rem;margin-bottom:10px}
+.list-loading{font-size:.85rem;color:#888;padding:12px 0;text-align:center}
+
+/* ── Call-In queue badge ── */
+.ci-reason-badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.4px;background:#fff3cd;color:#856404;border:1px solid #ffc107}
+.ci-reason-badge.bu{background:#fde8e8;color:#922b21;border-color:#e74c3c}
+.ci-reason-badge.gurgling{background:#e8f4fd;color:#1a527a;border-color:#2980b9}
+.ci-reason-badge.gm{background:#e8f8e8;color:#1a6b1a;border-color:#27ae60}
 
 /* ── Spinner overlay ── */
 #spinner{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;z-index:9999}
@@ -104,10 +115,10 @@ header h1{font-size:1.1rem;font-weight:700;letter-spacing:.3px}
 .hide{display:none!important}
 .sep-only,.trap-only{transition:opacity .2s}
 
-/* responsive tweaks */
 @media(max-width:480px){
-  .row2,.row3{grid-template-columns:1fr}
+  .row2,.row3,.row4{grid-template-columns:1fr}
   header h1{font-size:.95rem}
+  .tab-btn{font-size:.76rem;padding:9px 2px}
 }
 </style>
 </head>
@@ -116,25 +127,20 @@ header h1{font-size:1.1rem;font-weight:700;letter-spacing:.3px}
 <div id="spinner"><div class="spin-box"><span class="spin-icon">⚙</span>Saving…</div></div>
 
 <div id="app">
-  <header>
-    <h1>S.O.S. Septic Work Orders</h1>
-    <div class="header-btns">
-      <button class="btn-secondary" onclick="showTab('new')" style="padding:6px 12px">+ New</button>
-      <button class="btn-secondary" onclick="showTab('history')" style="padding:6px 12px">History</button>
-    </div>
-  </header>
+  <header><h1>S.O.S. Septic Work Orders</h1></header>
 
-  <!-- ====== NEW WORK ORDER TAB ====== -->
-  <div id="tabNew">
+  <nav class="tab-bar">
+    <button id="navBtn-septic"  class="tab-btn active" onclick="showTab('septic')">Septic WO</button>
+    <button id="navBtn-grease"  class="tab-btn"        onclick="showTab('grease')">Grease WO</button>
+    <button id="navBtn-callin"  class="tab-btn"        onclick="showTab('callin')">Call-In</button>
+    <button id="navBtn-history" class="tab-btn"        onclick="showTab('history')">History</button>
+  </nav>
 
-    <!-- Type -->
-    <div class="card" style="margin-top:10px">
-      <div class="type-toggle">
-        <button class="type-btn active" id="typeSeptic" onclick="setType('Septic')">🟦 Septic</button>
-        <button class="type-btn" id="typeGrease" onclick="setType('Grease Trap')">🟩 Grease Trap</button>
-      </div>
+  <!-- ====== WORK ORDER FORM (shared by Septic + Grease tabs) ====== -->
+  <div id="tabWork" style="margin-top:10px">
 
-      <!-- Customer lookup -->
+    <!-- Customer lookup -->
+    <div class="card">
       <div class="section-title">Customer Lookup</div>
       <div class="lookup-row">
         <input type="tel" id="lookupPhone" placeholder="Phone number to auto-fill…">
@@ -187,8 +193,8 @@ header h1{font-size:1.1rem;font-weight:700;letter-spacing:.3px}
         </div>
         <div class="row3">
           <div class="field"><label>Water Level</label><input type="text" id="waterLevel" placeholder='e.g. 12"'></div>
-          <div class="field"><label>Scum</label><input type="text" id="scum" placeholder='inches'></div>
-          <div class="field"><label>Sludge</label><input type="text" id="sludge" placeholder='inches'></div>
+          <div class="field"><label>Scum</label><input type="text" id="scum" placeholder="inches"></div>
+          <div class="field"><label>Sludge</label><input type="text" id="sludge" placeholder="inches"></div>
         </div>
         <div class="row3">
           <div class="field"><label>Tank Sound</label>
@@ -267,7 +273,6 @@ header h1{font-size:1.1rem;font-weight:700;letter-spacing:.3px}
         <button class="qp-btn" onclick="addLineItem('Parts / Materials')">Parts</button>
         <button class="qp-btn" onclick="addLineItem('Other')">Other</button>
       </div>
-
       <table id="lineItemsTable">
         <thead>
           <tr>
@@ -296,6 +301,7 @@ header h1{font-size:1.1rem;font-weight:700;letter-spacing:.3px}
             <option>Cash</option>
             <option>Check</option>
             <option>Credit Card</option>
+            <option>Zelle</option>
             <option>Invoice / Net 30</option>
             <option>COD</option>
           </select>
@@ -329,20 +335,172 @@ header h1{font-size:1.1rem;font-weight:700;letter-spacing:.3px}
       </div>
     </div>
 
-    <!-- Save -->
-    <div id="errorBanner"><ul id="errorList"></ul></div>
-    <div id="successBanner" id="successMsg"></div>
+    <!-- Save WO -->
+    <div class="error-banner" id="woErrorBanner"><ul id="woErrorList"></ul></div>
+    <div class="success-banner" id="woSuccessBanner"></div>
     <button class="btn-primary" id="saveBtn" onclick="saveWorkOrder()">Save Work Order</button>
     <div style="height:20px"></div>
 
-  </div><!-- /tabNew -->
+  </div><!-- /tabWork -->
+
+  <!-- ====== CALL-IN TAB ====== -->
+  <div id="tabCallin" class="hide" style="margin-top:10px">
+
+    <!-- Call-In form -->
+    <div class="card">
+      <div class="section-title">New Call-In</div>
+      <div class="row2">
+        <div class="field"><label>Rep (took the call) *</label><input type="text" id="ci_rep" placeholder="e.g. Brandon"></div>
+        <div class="field"><label>Date *</label><input type="date" id="ci_date"></div>
+      </div>
+      <div class="row2">
+        <div class="field"><label>Scheduled Date</label><input type="date" id="ci_scheduledDate"></div>
+        <div class="field"><label>Scheduled Time</label><input type="time" id="ci_scheduledTime"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">Bill To</div>
+      <div class="field"><label>Name / Company *</label><input type="text" id="ci_billToName" placeholder="Customer or business name"></div>
+      <div class="field"><label>Address</label><input type="text" id="ci_billToAddress" placeholder="Billing address"></div>
+      <div class="field"><label>Phone</label><input type="tel" id="ci_billToPhone" placeholder="Billing phone"></div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">Job Site (if different from Bill To)</div>
+      <div class="field"><label>Job Address</label><input type="text" id="ci_jobAddress" placeholder="Service address"></div>
+      <div class="field"><label>Job Phone</label><input type="tel" id="ci_jobPhone" placeholder="On-site contact phone"></div>
+      <div class="field"><label>Email</label><input type="email" id="ci_email" placeholder="customer@example.com"></div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">Reason for Call *</div>
+      <div class="field">
+        <label>Primary Reason</label>
+        <select id="ci_reason" onchange="toggleReasonDetail()">
+          <option value="">— select —</option>
+          <option value="B/U">B/U (Back-Up)</option>
+          <option value="General Maintenance">General Maintenance</option>
+          <option value="Gurgling">Gurgling</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+      <div class="field hide" id="ci_reasonDetailField">
+        <label>Detail / Description</label>
+        <input type="text" id="ci_reasonDetail" placeholder="Describe the issue…">
+      </div>
+      <div class="row2">
+        <div class="field"><label>Beds</label><input type="number" id="ci_beds" min="0" placeholder="# bedrooms"></div>
+        <div class="field"><label>Baths</label><input type="number" id="ci_baths" min="0" placeholder="# bathrooms"></div>
+      </div>
+      <div class="row2">
+        <div class="field"><label>Year Built</label><input type="number" id="ci_yearBuilt" placeholder="e.g. 1998"></div>
+        <div class="field"><label>LPO #</label><input type="text" id="ci_lpo"></div>
+      </div>
+
+      <div class="field">
+        <label>Equipment</label>
+        <div class="flag-row">
+          <label><input type="checkbox" id="ci_liftStation"> <span>Lift Station</span></label>
+          <label><input type="checkbox" id="ci_atu"> <span>ATU</span></label>
+          <label><input type="checkbox" id="ci_vacJob"> <span>Vac Job</span></label>
+        </div>
+      </div>
+
+      <div class="row2">
+        <div class="field"><label>Septic Tank Count</label><input type="number" id="ci_tankCount" min="0" placeholder="# tanks"></div>
+        <div class="field"></div>
+      </div>
+
+      <div class="field"><label>Special Directions / Notes</label><textarea id="ci_directions" placeholder="Gate codes, access info, landmarks…"></textarea></div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">Assign Technician(s)</div>
+      <p style="font-size:.75rem;color:#888;margin-bottom:8px">Select one or more. Update names below in the HTML to match your actual tech roster.</p>
+      <!-- UPDATE THESE NAMES to match S.O.S. Septic's actual technician roster -->
+      <div class="check-group" id="ci_techList">
+        <label><input type="checkbox" name="ci_tech" value="Mike"> <span>Mike</span></label>
+        <label><input type="checkbox" name="ci_tech" value="Steve"> <span>Steve</span></label>
+        <label><input type="checkbox" name="ci_tech" value="Jake"> <span>Jake</span></label>
+        <label><input type="checkbox" name="ci_tech" value="Chris"> <span>Chris</span></label>
+        <label><input type="checkbox" name="ci_tech" value="Dave"> <span>Dave</span></label>
+        <label><input type="checkbox" name="ci_tech" value="Tom"> <span>Tom</span></label>
+        <label><input type="checkbox" name="ci_tech" value="Jason"> <span>Jason</span></label>
+        <label><input type="checkbox" name="ci_tech" value="Ryan"> <span>Ryan</span></label>
+        <label><input type="checkbox" name="ci_tech" value="Kevin"> <span>Kevin</span></label>
+        <label><input type="checkbox" name="ci_tech" value="Brandon"> <span>Brandon</span></label>
+        <label><input type="checkbox" name="ci_tech" value="Tyler"> <span>Tyler</span></label>
+        <label><input type="checkbox" name="ci_tech" value="Josh"> <span>Josh</span></label>
+        <label><input type="checkbox" name="ci_tech" value="Cody"> <span>Cody</span></label>
+        <label><input type="checkbox" name="ci_tech" value="Kyle"> <span>Kyle</span></label>
+        <label><input type="checkbox" name="ci_tech" value="Eric"> <span>Eric</span></label>
+        <label><input type="checkbox" name="ci_tech" value="Derek"> <span>Derek</span></label>
+        <label><input type="checkbox" name="ci_tech" value="Travis"> <span>Travis</span></label>
+        <label><input type="checkbox" name="ci_tech" value="Zach"> <span>Zach</span></label>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">Quote</div>
+      <div class="row2">
+        <div class="field"><label>Extra Time (hrs)</label><input type="number" id="ci_extraTime" min="0" step="0.5" placeholder="0"></div>
+        <div class="field"><label>Price ($)</label><input type="number" id="ci_price" min="0" step="0.01" placeholder="0.00"></div>
+      </div>
+      <div class="field">
+        <label>Conditions</label>
+        <div class="flag-row">
+          <label><input type="checkbox" id="ci_overfull"> <span>Overfull</span></label>
+          <label><input type="checkbox" id="ci_fieldRunback"> <span>Field Runback</span></label>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">Payment Info</div>
+      <div class="row2">
+        <div class="field"><label>Payment Type</label>
+          <select id="ci_paymentType">
+            <option value="">— select —</option>
+            <option>Cash</option>
+            <option>Check</option>
+            <option>Card (+4% fee)</option>
+          </select>
+        </div>
+        <div class="field"><label>Billing Type</label>
+          <select id="ci_billingType">
+            <option value="">— select —</option>
+            <option>Invoice</option>
+            <option>COD</option>
+            <option>Zelle</option>
+            <option>Credit Card on File</option>
+          </select>
+        </div>
+      </div>
+      <p style="font-size:.73rem;color:#999;margin-top:4px">Card number, expiry, and CVV are not collected here — taken at time of service via your terminal.</p>
+    </div>
+
+    <div class="error-banner" id="ciErrorBanner"><ul id="ciErrorList"></ul></div>
+    <div class="success-banner" id="ciSuccessBanner"></div>
+    <button class="btn-green" id="ciSaveBtn" onclick="saveCallIn()">Save Call-In</button>
+
+    <!-- Recent call-ins queue -->
+    <div class="card" style="margin-top:16px">
+      <div class="section-title">Recent Call-Ins</div>
+      <input type="text" class="search-input" id="ciSearch" placeholder="Search call-ins…" oninput="filterCallIns()">
+      <div class="list-loading" id="ciLoading"></div>
+      <div id="ciList"></div>
+    </div>
+
+    <div style="height:20px"></div>
+  </div><!-- /tabCallin -->
 
   <!-- ====== HISTORY TAB ====== -->
   <div id="tabHistory" class="hide" style="margin-top:10px">
     <div class="card">
       <div class="section-title">Work Order History</div>
-      <input type="text" id="historySearch" placeholder="Search by name, WO#, address…" oninput="filterHistory()">
-      <div id="histLoading">Loading…</div>
+      <input type="text" class="search-input" id="historySearch" placeholder="Search by name, WO#, address…" oninput="filterHistory()">
+      <div class="list-loading" id="histLoading">Loading…</div>
       <div id="historyList"></div>
     </div>
   </div>
@@ -350,48 +508,46 @@ header h1{font-size:1.1rem;font-weight:700;letter-spacing:.3px}
 </div><!-- /app -->
 
 <script>
-// ── Secret injected server-side ──
 var SECRET = '<?= secret ?>';
 
-// ── App state ──
-var currentType = 'Septic';
-var sigPad = { drawing: false, lastX: 0, lastY: 0 };
-var allOrders = [];
+// ── State ──
+var currentType    = 'Septic';
+var sigPad         = { drawing: false, lastX: 0, lastY: 0 };
+var allOrders      = [];
+var allCallIns     = [];
+var lineItemCounter = 0;
 
-// ── Signature canvas ──
+// ── Init ──
 var canvas, ctx;
 window.addEventListener('load', function() {
   canvas = document.getElementById('sigCanvas');
-  ctx = canvas.getContext('2d');
+  ctx    = canvas.getContext('2d');
   resizeCanvas();
 
   canvas.addEventListener('mousedown', startDraw);
   canvas.addEventListener('mousemove', draw);
-  canvas.addEventListener('mouseup', endDraw);
+  canvas.addEventListener('mouseup',   endDraw);
   canvas.addEventListener('mouseleave', endDraw);
   canvas.addEventListener('touchstart', function(e){ e.preventDefault(); startDraw(e.touches[0]); }, {passive:false});
-  canvas.addEventListener('touchmove', function(e){ e.preventDefault(); draw(e.touches[0]); }, {passive:false});
-  canvas.addEventListener('touchend', endDraw);
+  canvas.addEventListener('touchmove',  function(e){ e.preventDefault(); draw(e.touches[0]); },     {passive:false});
+  canvas.addEventListener('touchend',   endDraw);
 
-  // Set today's date
   document.getElementById('date').valueAsDate = new Date();
+  document.getElementById('ci_date').valueAsDate = new Date();
 
-  // Set canvas line style
-  ctx.lineWidth = 2;
-  ctx.lineCap = 'round';
-  ctx.strokeStyle = '#1a1a1a';
+  ctx.lineWidth = 2; ctx.lineCap = 'round'; ctx.strokeStyle = '#1a1a1a';
+  applyType();
 });
 
 window.addEventListener('resize', resizeCanvas);
 
+// ── Canvas ──
 function resizeCanvas() {
   if (!canvas) return;
-  var w = canvas.offsetWidth;
-  canvas.width = w;
+  canvas.width  = canvas.offsetWidth;
   canvas.height = 130;
   if (ctx) { ctx.lineWidth = 2; ctx.lineCap = 'round'; ctx.strokeStyle = '#1a1a1a'; }
 }
-
 function getPos(evt) {
   var r = canvas.getBoundingClientRect();
   return { x: evt.clientX - r.left, y: evt.clientY - r.top };
@@ -411,20 +567,27 @@ function isSignatureEmpty() {
   return true;
 }
 
-// ── Type toggle ──
-function setType(t) {
-  currentType = t;
-  document.getElementById('typeSeptic').classList.toggle('active', t === 'Septic');
-  document.getElementById('typeGrease').classList.toggle('active', t === 'Grease Trap');
-  document.querySelectorAll('.sep-only').forEach(function(el){ el.classList.toggle('hide', t !== 'Septic'); });
-  document.querySelectorAll('.trap-only').forEach(function(el){ el.classList.toggle('hide', t !== 'Grease Trap'); });
+// ── Tab navigation ──
+var TAB_CONTAINERS = { septic: 'tabWork', grease: 'tabWork', callin: 'tabCallin', history: 'tabHistory' };
+
+function showTab(which) {
+  var targetId = TAB_CONTAINERS[which];
+  Object.keys(TAB_CONTAINERS).forEach(function(t) {
+    var id = TAB_CONTAINERS[t];
+    document.getElementById(id).classList.toggle('hide', id !== targetId);
+  });
+  ['septic','grease','callin','history'].forEach(function(t) {
+    document.getElementById('navBtn-' + t).classList.toggle('active', t === which);
+  });
+  if (which === 'septic') { currentType = 'Septic';      applyType(); }
+  if (which === 'grease') { currentType = 'Grease Trap'; applyType(); }
+  if (which === 'history') loadHistory();
+  if (which === 'callin')  loadCallIns();
 }
 
-// ── Tab navigation ──
-function showTab(which) {
-  document.getElementById('tabNew').classList.toggle('hide', which !== 'new');
-  document.getElementById('tabHistory').classList.toggle('hide', which !== 'history');
-  if (which === 'history') loadHistory();
+function applyType() {
+  document.querySelectorAll('.sep-only').forEach(function(el){ el.classList.toggle('hide', currentType !== 'Septic'); });
+  document.querySelectorAll('.trap-only').forEach(function(el){ el.classList.toggle('hide', currentType !== 'Grease Trap'); });
 }
 
 // ── Customer lookup ──
@@ -439,28 +602,26 @@ function doLookup() {
       if (!data.ok) { setLookupStatus('Error: ' + data.error, '#c0392b'); return; }
       if (!data.customer) { setLookupStatus('No matching customer found.', '#888'); return; }
       var c = data.customer;
-      fillIfEmpty('billTo', c.billTo);
-      fillIfEmpty('job', c.job);
-      fillIfEmpty('phone1', c.phone1);
-      fillIfEmpty('phone2', c.phone2);
-      fillIfEmpty('material', c.material);
+      fillIfEmpty('billTo',      c.billTo);
+      fillIfEmpty('job',         c.job);
+      fillIfEmpty('phone1',      c.phone1);
+      fillIfEmpty('phone2',      c.phone2);
+      fillIfEmpty('material',    c.material);
       fillIfEmpty('compartment', c.compartment);
-      fillIfEmpty('outletT', c.outletT);
-      fillIfEmpty('tankSound', c.tankSound);
-      fillIfEmpty('drainfield', c.drainfield);
-      fillIfEmpty('trapLocation', c.trapLocation);
-      fillIfEmpty('yearBuilt', c.yearBuilt);
-      fillIfEmpty('pumpType', c.pumpType);
+      fillIfEmpty('outletT',     c.outletT);
+      fillIfEmpty('tankSound',   c.tankSound);
+      fillIfEmpty('drainfield',  c.drainfield);
+      fillIfEmpty('trapLocation',c.trapLocation);
+      fillIfEmpty('yearBuilt',   c.yearBuilt);
+      fillIfEmpty('pumpType',    c.pumpType);
       setLookupStatus('Customer details filled in.', '#27ae60');
     })
     .catch(function(){ setLookupStatus('Network error. Try again.', '#c0392b'); });
 }
-
 function fillIfEmpty(id, val) {
   if (!val) return;
   var el = document.getElementById(id);
-  if (!el) return;
-  if (!el.value) el.value = val;
+  if (el && !el.value) el.value = val;
 }
 function setLookupStatus(msg, color) {
   var el = document.getElementById('lookupStatus');
@@ -468,10 +629,8 @@ function setLookupStatus(msg, color) {
 }
 
 // ── Line items ──
-var lineItemCounter = 0;
 function addLineItem(label) {
   var id = ++lineItemCounter;
-  var tbody = document.getElementById('lineItemsBody');
   var tr = document.createElement('tr');
   tr.id = 'li-' + id;
   tr.innerHTML =
@@ -479,7 +638,7 @@ function addLineItem(label) {
     '<td><input type="number" placeholder="—" min="0" step="1" oninput="calcTotal()"></td>' +
     '<td><input type="number" placeholder="0.00" min="0" step="0.01" oninput="calcTotal()"></td>' +
     '<td><button class="del-btn" onclick="removeLineItem(' + id + ')">✕</button></td>';
-  tbody.appendChild(tr);
+  document.getElementById('lineItemsBody').appendChild(tr);
   calcTotal();
 }
 function removeLineItem(id) {
@@ -488,12 +647,9 @@ function removeLineItem(id) {
   calcTotal();
 }
 function calcTotal() {
-  var rows = document.querySelectorAll('#lineItemsBody tr');
   var sum = 0;
-  rows.forEach(function(r) {
-    var inputs = r.querySelectorAll('input');
-    var amt = parseFloat(inputs[2].value) || 0;
-    sum += amt;
+  document.querySelectorAll('#lineItemsBody tr').forEach(function(r) {
+    sum += parseFloat(r.querySelectorAll('input')[2].value) || 0;
   });
   document.getElementById('totalDisplay').textContent = '$' + sum.toFixed(2);
   return sum;
@@ -510,23 +666,20 @@ function getLineItems() {
   return items;
 }
 function hasValidLineItem() {
-  var items = getLineItems();
-  return items.some(function(it){ return parseFloat(it.amount) > 0; });
+  return getLineItems().some(function(it){ return parseFloat(it.amount) > 0; });
 }
 
-// ── Validation ──
-function validate() {
+// ── WO Validation ──
+function validateWo() {
   var errors = [];
   var fields = [
-    { id: 'date', label: 'Date' },
-    { id: 'billTo', label: 'Bill To' },
-    { id: 'job', label: 'Job / Address' },
-    { id: 'technician', label: 'Technician' },
-    { id: 'signedBy', label: 'Printed Name (Signed By)' }
+    { id: 'date',      label: 'Date' },
+    { id: 'billTo',    label: 'Bill To' },
+    { id: 'job',       label: 'Job / Address' },
+    { id: 'technician',label: 'Technician' },
+    { id: 'signedBy',  label: 'Printed Name (Signed By)' }
   ];
-  // Clear previous errors
   document.querySelectorAll('.error').forEach(function(el){ el.classList.remove('error'); });
-
   fields.forEach(function(f) {
     var el = document.getElementById(f.id);
     if (!el || !el.value.trim()) {
@@ -534,18 +687,16 @@ function validate() {
       if (el) el.classList.add('error');
     }
   });
-  if (!hasValidLineItem()) {
-    errors.push('At least one line item with a positive dollar amount is required.');
-  }
+  if (!hasValidLineItem()) errors.push('At least one line item with a positive dollar amount is required.');
   return errors;
 }
 
-// ── Save ──
+// ── Save WO ──
 function saveWorkOrder() {
-  var errors = validate();
-  var errBanner = document.getElementById('errorBanner');
-  var errList = document.getElementById('errorList');
-  var succBanner = document.getElementById('successBanner');
+  var errors    = validateWo();
+  var errBanner = document.getElementById('woErrorBanner');
+  var errList   = document.getElementById('woErrorList');
+  var succBanner= document.getElementById('woSuccessBanner');
 
   if (errors.length) {
     errList.innerHTML = errors.map(function(e){ return '<li>' + escHtml(e) + '</li>'; }).join('');
@@ -556,7 +707,7 @@ function saveWorkOrder() {
   }
   errBanner.style.display = 'none';
 
-  var total = calcTotal();
+  var total   = calcTotal();
   var payload = {
     secret: SECRET,
     type: currentType,
@@ -577,55 +728,42 @@ function saveWorkOrder() {
     total: total.toFixed(2),
     billing: v('billing'), terms: v('terms'),
     checkNum: v('checkNum'), paymentAmt: v('paymentAmt'),
-    comments: v('comments'),
-    signedBy: v('signedBy')
+    comments: v('comments'), signedBy: v('signedBy')
   };
 
-  document.getElementById('spinner').style.display = 'flex';
+  showSpinner(true);
   document.getElementById('saveBtn').disabled = true;
 
-  fetch(window.location.href, {
-    method: 'POST',
-    body: JSON.stringify(payload)
-  })
-  .then(function(r){ return r.json(); })
-  .then(function(data) {
-    document.getElementById('spinner').style.display = 'none';
-    document.getElementById('saveBtn').disabled = false;
-    if (!data.ok) {
-      errList.innerHTML = '<li>' + escHtml(data.error || 'Unknown error') + '</li>';
+  fetch(window.location.href, { method: 'POST', body: JSON.stringify(payload) })
+    .then(function(r){ return r.json(); })
+    .then(function(data) {
+      showSpinner(false);
+      document.getElementById('saveBtn').disabled = false;
+      if (!data.ok) {
+        errList.innerHTML = '<li>' + escHtml(data.error || 'Unknown error') + '</li>';
+        errBanner.style.display = 'block';
+        return;
+      }
+      succBanner.textContent = 'Saved! Work Order ' + data.woNumber + ' created.';
+      succBanner.style.display = 'block';
+      succBanner.scrollIntoView({ behavior: 'smooth' });
+      generatePdf(payload, data.woNumber);
+      resetWoForm();
+    })
+    .catch(function(err) {
+      showSpinner(false);
+      document.getElementById('saveBtn').disabled = false;
+      errList.innerHTML = '<li>Network error: ' + escHtml(err.message) + '</li>';
       errBanner.style.display = 'block';
-      return;
-    }
-    var woNum = data.woNumber;
-    succBanner.textContent = 'Saved! Work Order ' + woNum + ' created successfully.';
-    succBanner.style.display = 'block';
-    succBanner.scrollIntoView({ behavior: 'smooth' });
-
-    // Offer PDF download
-    generatePdf(payload, woNum);
-    resetForm();
-  })
-  .catch(function(err) {
-    document.getElementById('spinner').style.display = 'none';
-    document.getElementById('saveBtn').disabled = false;
-    errList.innerHTML = '<li>Network error: ' + escHtml(err.message) + '</li>';
-    errBanner.style.display = 'block';
-  });
+    });
 }
 
-function v(id) {
-  var el = document.getElementById(id);
-  return el ? el.value.trim() : '';
-}
-
-function resetForm() {
-  // Clear text/number/select fields
-  var ids = ['billTo','job','phone1','phone2','pumpoutOrdered','technician','pumpType',
-    'yearBuilt','waterLevel','drainfield','scum','sludge','tankSound','compartment',
-    'outletT','material','trapLocation','directions','schedule','lpo','nextPump',
-    'specialNotes','billing','terms','checkNum','paymentAmt','comments','signedBy','lookupPhone'];
-  ids.forEach(function(id){ var el=document.getElementById(id); if(el) el.value=''; });
+function resetWoForm() {
+  ['billTo','job','phone1','phone2','pumpoutOrdered','technician','pumpType',
+   'yearBuilt','waterLevel','drainfield','scum','sludge','tankSound','compartment',
+   'outletT','material','trapLocation','directions','schedule','lpo','nextPump',
+   'specialNotes','billing','terms','checkNum','paymentAmt','comments','signedBy','lookupPhone'
+  ].forEach(function(id){ var el=document.getElementById(id); if(el) el.value=''; });
   document.getElementById('date').valueAsDate = new Date();
   document.getElementById('time').value = '';
   document.getElementById('lineItemsBody').innerHTML = '';
@@ -633,134 +771,164 @@ function resetForm() {
   calcTotal();
   clearSignature();
   document.getElementById('lookupStatus').textContent = '';
-  setType('Septic');
+  applyType();
 }
 
-// ── PDF generation ──
-function generatePdf(data, woNum) {
-  var doc = new jspdf.jsPDF({ unit: 'pt', format: 'letter' });
-  var lm = 50, rm = 562, y = 50, lineH = 18;
+// ── Call-In ──
+function toggleReasonDetail() {
+  var val = document.getElementById('ci_reason').value;
+  document.getElementById('ci_reasonDetailField').classList.toggle('hide', val !== 'Other' && val !== 'B/U');
+}
 
-  function line(label, val, x1, x2) {
-    doc.setFont('helvetica','bold'); doc.setFontSize(9); doc.text(label, x1, y);
-    doc.setFont('helvetica','normal'); doc.text(String(val||''), x2, y);
-    y += lineH;
+function getCiTechs() {
+  var checked = [];
+  document.querySelectorAll('input[name="ci_tech"]:checked').forEach(function(cb){ checked.push(cb.value); });
+  return checked.join(', ');
+}
+
+function validateCi() {
+  var errors = [];
+  document.querySelectorAll('.error').forEach(function(el){ el.classList.remove('error'); });
+  [{ id:'ci_rep', label:'Rep' }, { id:'ci_date', label:'Date' }, { id:'ci_billToName', label:'Bill To Name' }]
+    .forEach(function(f) {
+      var el = document.getElementById(f.id);
+      if (!el || !el.value.trim()) {
+        errors.push(f.label + ' is required.');
+        if (el) el.classList.add('error');
+      }
+    });
+  if (!document.getElementById('ci_reason').value) errors.push('Reason for Call is required.');
+  return errors;
+}
+
+function saveCallIn() {
+  var errors     = validateCi();
+  var errBanner  = document.getElementById('ciErrorBanner');
+  var errList    = document.getElementById('ciErrorList');
+  var succBanner = document.getElementById('ciSuccessBanner');
+
+  if (errors.length) {
+    errList.innerHTML = errors.map(function(e){ return '<li>' + escHtml(e) + '</li>'; }).join('');
+    errBanner.style.display = 'block';
+    succBanner.style.display = 'none';
+    errBanner.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    return;
   }
-  function section(title) {
-    y += 6;
-    doc.setFillColor(26,74,122); doc.rect(lm, y-12, rm-lm, 16, 'F');
-    doc.setTextColor(255,255,255); doc.setFont('helvetica','bold'); doc.setFontSize(10);
-    doc.text(title, lm+4, y); doc.setTextColor(0,0,0); y += 8;
-  }
+  errBanner.style.display = 'none';
 
-  // Header
-  doc.setFont('helvetica','bold'); doc.setFontSize(18);
-  doc.setTextColor(26,74,122);
-  doc.text('S.O.S. Septic, Inc.', lm, y); y += 22;
-  doc.setFontSize(10); doc.setTextColor(80,80,80);
-  doc.text('sosseptic.com  •  Englewood, FL', lm, y); y += 16;
-  doc.setFont('helvetica','bold'); doc.setFontSize(14); doc.setTextColor(0,0,0);
-  doc.text((data.type || 'Septic') + ' Work Order', lm, y);
-  doc.setFontSize(12); doc.text(woNum, rm - doc.getTextWidth(woNum), y);
-  y += 22;
-  doc.setDrawColor(180,180,180); doc.line(lm, y, rm, y); y += 14;
+  var payload = {
+    secret: SECRET,
+    sheetType: 'callin',
+    rep:           v('ci_rep'),
+    date:          v('ci_date'),
+    scheduledDate: v('ci_scheduledDate'),
+    scheduledTime: v('ci_scheduledTime'),
+    billToName:    v('ci_billToName'),
+    billToAddress: v('ci_billToAddress'),
+    billToPhone:   v('ci_billToPhone'),
+    jobAddress:    v('ci_jobAddress'),
+    jobPhone:      v('ci_jobPhone'),
+    email:         v('ci_email'),
+    reason:        v('ci_reason'),
+    reasonDetail:  v('ci_reasonDetail'),
+    beds:          v('ci_beds'),
+    baths:         v('ci_baths'),
+    yearBuilt:     v('ci_yearBuilt'),
+    lpo:           v('ci_lpo'),
+    liftStation:   document.getElementById('ci_liftStation').checked,
+    atu:           document.getElementById('ci_atu').checked,
+    vacJob:        document.getElementById('ci_vacJob').checked,
+    tankCount:     v('ci_tankCount'),
+    directions:    v('ci_directions'),
+    technicians:   getCiTechs(),
+    extraTime:     v('ci_extraTime'),
+    price:         v('ci_price'),
+    overfull:      document.getElementById('ci_overfull').checked,
+    fieldRunback:  document.getElementById('ci_fieldRunback').checked,
+    paymentType:   v('ci_paymentType'),
+    billingType:   v('ci_billingType')
+  };
 
-  // Customer
-  section('Customer & Job Information');
-  line('Bill To:', data.billTo, lm, lm+80);
-  line('Job Address:', data.job, lm, lm+80);
-  line('Phone 1:', data.phone1, lm, lm+80);
-  line('Phone 2:', data.phone2, lm, lm+80);
+  showSpinner(true);
+  document.getElementById('ciSaveBtn').disabled = true;
 
-  // Job details
-  section('Job Details');
-  var col2 = (lm + rm) / 2 + 10;
-  var savedY = y;
-  doc.setFont('helvetica','bold'); doc.setFontSize(9);
-  doc.text('Date:', lm, y); doc.setFont('helvetica','normal'); doc.text(data.date||'', lm+40, y);
-  doc.setFont('helvetica','bold'); doc.text('Time:', col2, y); doc.setFont('helvetica','normal'); doc.text(data.time||'', col2+40, y);
-  y += lineH;
-  doc.setFont('helvetica','bold'); doc.text('Technician:', lm, y); doc.setFont('helvetica','normal'); doc.text(data.technician||'', lm+70, y);
-  y += lineH;
+  fetch(window.location.href, { method: 'POST', body: JSON.stringify(payload) })
+    .then(function(r){ return r.json(); })
+    .then(function(data) {
+      showSpinner(false);
+      document.getElementById('ciSaveBtn').disabled = false;
+      if (!data.ok) {
+        errList.innerHTML = '<li>' + escHtml(data.error || 'Unknown error') + '</li>';
+        errBanner.style.display = 'block';
+        return;
+      }
+      succBanner.textContent = 'Saved! Call-In ' + data.ciNumber + ' recorded.';
+      succBanner.style.display = 'block';
+      succBanner.scrollIntoView({ behavior: 'smooth' });
+      resetCiForm();
+      loadCallIns();
+    })
+    .catch(function(err) {
+      showSpinner(false);
+      document.getElementById('ciSaveBtn').disabled = false;
+      errList.innerHTML = '<li>Network error: ' + escHtml(err.message) + '</li>';
+      errBanner.style.display = 'block';
+    });
+}
 
-  if (data.type === 'Septic') {
-    doc.setFont('helvetica','bold'); doc.text('Pump Type:', lm, y); doc.setFont('helvetica','normal'); doc.text(data.pumpType||'', lm+70, y);
-    doc.setFont('helvetica','bold'); doc.text('Year Built:', col2, y); doc.setFont('helvetica','normal'); doc.text(String(data.yearBuilt||''), col2+60, y); y += lineH;
-    doc.setFont('helvetica','bold'); doc.text('Water Level:', lm, y); doc.setFont('helvetica','normal'); doc.text(data.waterLevel||'', lm+75, y);
-    doc.setFont('helvetica','bold'); doc.text('Scum:', col2, y); doc.setFont('helvetica','normal'); doc.text(data.scum||'', col2+35, y); y += lineH;
-    doc.setFont('helvetica','bold'); doc.text('Sludge:', lm, y); doc.setFont('helvetica','normal'); doc.text(data.sludge||'', lm+45, y);
-    doc.setFont('helvetica','bold'); doc.text('Tank Sound:', col2, y); doc.setFont('helvetica','normal'); doc.text(data.tankSound||'', col2+65, y); y += lineH;
-    doc.setFont('helvetica','bold'); doc.text('Compartment:', lm, y); doc.setFont('helvetica','normal'); doc.text(data.compartment||'', lm+78, y);
-    doc.setFont('helvetica','bold'); doc.text('Outlet T:', col2, y); doc.setFont('helvetica','normal'); doc.text(data.outletT||'', col2+50, y); y += lineH;
-    doc.setFont('helvetica','bold'); doc.text('Material:', lm, y); doc.setFont('helvetica','normal'); doc.text(data.material||'', lm+55, y);
-    doc.setFont('helvetica','bold'); doc.text('Drainfield:', col2, y); doc.setFont('helvetica','normal'); doc.text(data.drainfield||'', col2+60, y); y += lineH;
-  } else {
-    doc.setFont('helvetica','bold'); doc.text('Trap Location:', lm, y); doc.setFont('helvetica','normal'); doc.text(data.trapLocation||'', lm+82, y); y += lineH;
-  }
-
-  if (data.directions) {
-    doc.setFont('helvetica','bold'); doc.text('Directions:', lm, y); y += lineH;
-    doc.setFont('helvetica','normal'); doc.setFontSize(8);
-    var lines = doc.splitTextToSize(data.directions, rm-lm-10);
-    doc.text(lines, lm+10, y); y += lines.length * 13;
-    doc.setFontSize(9);
-  }
-
-  // Line Items
-  section('Services & Charges');
-  var colW = [260, 80, 90, 80];
-  var hdrs = ['Description', 'Gallons', 'Amount', ''];
-  var cx = lm;
-  doc.setFont('helvetica','bold'); doc.setFontSize(9);
-  hdrs.forEach(function(h,i){ doc.text(h, cx, y); cx += colW[i]; });
-  y += 4; doc.setDrawColor(200,200,200); doc.line(lm, y, rm, y); y += 12;
-  doc.setFont('helvetica','normal');
-  (data.lineItems||[]).forEach(function(it) {
-    cx = lm;
-    doc.text(String(it.label||''), cx, y); cx += colW[0];
-    doc.text(String(it.gallons||''), cx, y); cx += colW[1];
-    var amtStr = it.amount ? '$'+parseFloat(it.amount).toFixed(2) : '';
-    doc.text(amtStr, cx, y);
-    y += lineH;
+function resetCiForm() {
+  ['ci_rep','ci_scheduledDate','ci_scheduledTime','ci_billToName','ci_billToAddress',
+   'ci_billToPhone','ci_jobAddress','ci_jobPhone','ci_email','ci_reason','ci_reasonDetail',
+   'ci_beds','ci_baths','ci_yearBuilt','ci_lpo','ci_tankCount','ci_directions',
+   'ci_extraTime','ci_price','ci_paymentType','ci_billingType'
+  ].forEach(function(id){ var el=document.getElementById(id); if(el) el.value=''; });
+  document.getElementById('ci_date').valueAsDate = new Date();
+  ['ci_liftStation','ci_atu','ci_vacJob','ci_overfull','ci_fieldRunback'].forEach(function(id){
+    var el = document.getElementById(id); if(el) el.checked = false;
   });
-  y += 4; doc.line(lm, y, rm, y); y += 14;
-  doc.setFont('helvetica','bold'); doc.setFontSize(11);
-  var totalStr = 'Total: $' + (parseFloat(data.total)||0).toFixed(2);
-  doc.text(totalStr, rm - doc.getTextWidth(totalStr), y); y += 22;
+  document.querySelectorAll('input[name="ci_tech"]').forEach(function(cb){ cb.checked = false; });
+  document.getElementById('ci_reasonDetailField').classList.add('hide');
+}
 
-  // Payment
-  section('Payment');
-  doc.setFontSize(9);
-  line('Billing:', data.billing, lm, lm+55);
-  line('Terms:', data.terms, lm, lm+55);
-  if (data.checkNum) line('Check #:', data.checkNum, lm, lm+55);
-  if (data.paymentAmt) line('Payment:', '$'+data.paymentAmt, lm, lm+55);
-  if (data.comments) {
-    doc.setFont('helvetica','bold'); doc.text('Comments:', lm, y); y += lineH;
-    doc.setFont('helvetica','normal');
-    var cl = doc.splitTextToSize(data.comments, rm-lm-10);
-    doc.text(cl, lm+10, y); y += cl.length * 13;
-  }
+// ── Call-In list ──
+function loadCallIns() {
+  var loading = document.getElementById('ciLoading');
+  var list    = document.getElementById('ciList');
+  loading.textContent = 'Loading…'; list.innerHTML = '';
 
-  // Signature area
-  y += 10;
-  if (y > 680) { doc.addPage(); y = 50; }
-  doc.setFont('helvetica','bold'); doc.setFontSize(9);
-  doc.text('Customer Signature:', lm, y); y += 8;
-  // Embed signature if present
-  if (!isSignatureEmpty()) {
-    var sigData = canvas.toDataURL('image/png');
-    doc.addImage(sigData, 'PNG', lm, y, 200, 60);
-    y += 68;
-  } else {
-    doc.setDrawColor(180); doc.rect(lm, y, 200, 55); y += 63;
-  }
-  doc.line(lm, y, lm+200, y); y += 14;
-  doc.text('Printed Name: ' + (data.signedBy||''), lm, y); y += lineH;
-  doc.setFont('helvetica','normal'); doc.setFontSize(8); doc.setTextColor(120);
-  doc.text('S.O.S. Septic, Inc. — sosseptic.com — Englewood, FL', lm, y);
+  fetch(window.location.href + '?action=list&sheet=callins&secret=' + encodeURIComponent(SECRET))
+    .then(function(r){ return r.json(); })
+    .then(function(data) {
+      loading.textContent = '';
+      if (!data.ok) { loading.textContent = 'Error: ' + data.error; return; }
+      allCallIns = data.callins || [];
+      renderCallIns(allCallIns);
+    })
+    .catch(function(){ loading.textContent = 'Network error.'; });
+}
 
-  doc.save(woNum + '_' + (data.billTo||'WO').replace(/[^a-zA-Z0-9]/g,'_') + '.pdf');
+function filterCallIns() {
+  var q = document.getElementById('ciSearch').value.toLowerCase();
+  renderCallIns(q ? allCallIns.filter(function(o){ return JSON.stringify(o).toLowerCase().indexOf(q) !== -1; }) : allCallIns);
+}
+
+function renderCallIns(items) {
+  var list = document.getElementById('ciList');
+  if (!items.length) { list.innerHTML = '<p style="color:#888;font-size:.85rem;text-align:center;padding:16px">No call-ins found.</p>'; return; }
+  list.innerHTML = items.map(function(o) {
+    var ciNum  = o['CI Number'] || '—';
+    var name   = o['Bill To Name'] || '—';
+    var sched  = (o['Scheduled Date'] || '') + (o['Scheduled Time'] ? ' ' + o['Scheduled Time'] : '');
+    var techs  = o['Technicians'] || 'Unassigned';
+    var reason = o['Reason'] || '';
+    var badgeCls = reason === 'B/U' ? 'bu' : reason === 'Gurgling' ? 'gurgling' : reason === 'General Maintenance' ? 'gm' : '';
+    return '<div class="list-card">' +
+      '<div class="rec-num">' + escHtml(ciNum) + ' &nbsp;<span class="ci-reason-badge ' + badgeCls + '">' + escHtml(reason) + '</span></div>' +
+      '<div class="rec-meta">' + escHtml(name) + '</div>' +
+      (sched.trim() ? '<div class="rec-meta">Sched: ' + escHtml(sched.trim()) + '</div>' : '') +
+      '<div class="rec-meta">Tech: ' + escHtml(techs) + '</div>' +
+    '</div>';
+  }).join('');
 }
 
 // ── History ──
@@ -780,11 +948,7 @@ function loadHistory() {
 
 function filterHistory() {
   var q = document.getElementById('historySearch').value.toLowerCase();
-  if (!q) { renderHistory(allOrders); return; }
-  var filtered = allOrders.filter(function(o) {
-    return JSON.stringify(o).toLowerCase().indexOf(q) !== -1;
-  });
-  renderHistory(filtered);
+  renderHistory(q ? allOrders.filter(function(o){ return JSON.stringify(o).toLowerCase().indexOf(q) !== -1; }) : allOrders);
 }
 
 function renderHistory(orders) {
@@ -792,23 +956,21 @@ function renderHistory(orders) {
   if (!orders.length) { list.innerHTML = '<p style="color:#888;font-size:.85rem;text-align:center;padding:16px">No records found.</p>'; return; }
   list.innerHTML = orders.map(function(o) {
     var woNum = o['WO Number'] || '—';
-    var billTo = o['Bill To'] || '—';
-    var date = o['Date'] || '';
-    var type = o['Type'] || '';
-    var total = o['Total'] ? '$'+parseFloat(o['Total']).toFixed(2) : '';
-    return '<div class="hist-card">' +
-      '<div class="wo-num">' + escHtml(woNum) + ' <span style="font-weight:400;color:#888;font-size:.8rem">— ' + escHtml(type) + '</span></div>' +
-      '<div class="wo-meta">' + escHtml(billTo) + ' &nbsp;|&nbsp; ' + escHtml(date) + (total ? ' &nbsp;|&nbsp; ' + escHtml(total) : '') + '</div>' +
-      '<div class="wo-actions">' +
-        '<button class="btn-pdf" onclick="reprintPdf(' + JSON.stringify(JSON.stringify(o)) + ')">PDF</button>' +
-      '</div>' +
+    var type  = o['Type'] || '';
+    var billTo= o['Bill To'] || '—';
+    var date  = o['Date'] || '';
+    var total = o['Total'] ? '$' + parseFloat(o['Total']).toFixed(2) : '';
+    return '<div class="list-card">' +
+      '<div class="rec-num">' + escHtml(woNum) + ' <span style="font-weight:400;color:#888;font-size:.8rem">— ' + escHtml(type) + '</span></div>' +
+      '<div class="rec-meta">' + escHtml(billTo) + (date ? ' &nbsp;|&nbsp; ' + escHtml(date) : '') + (total ? ' &nbsp;|&nbsp; ' + escHtml(total) : '') + '</div>' +
+      '<div class="rec-actions"><button class="btn-pdf" onclick="reprintPdf(' + JSON.stringify(JSON.stringify(o)) + ')">PDF</button></div>' +
     '</div>';
   }).join('');
 }
 
 function reprintPdf(jsonStr) {
   var o = JSON.parse(jsonStr);
-  var data = {
+  generatePdf({
     type: o['Type'], date: o['Date'], time: o['Time'],
     billTo: o['Bill To'], job: o['Job'], phone1: o['Phone 1'], phone2: o['Phone 2'],
     pumpoutOrdered: o['Pumpout Ordered'], technician: o['Technician'],
@@ -822,14 +984,122 @@ function reprintPdf(jsonStr) {
     total: o['Total'], billing: o['Billing'], terms: o['Terms'],
     checkNum: o['Check Num'], paymentAmt: o['Payment Amt'],
     comments: o['Comments'], signedBy: o['Signed By']
-  };
-  generatePdf(data, o['WO Number'] || 'WO');
+  }, o['WO Number'] || 'WO');
 }
 
-function safeParseJson(s) {
-  try { return JSON.parse(s); } catch(e) { return []; }
+// ── PDF generation ──
+function generatePdf(data, woNum) {
+  var doc = new jspdf.jsPDF({ unit: 'pt', format: 'letter' });
+  var lm = 50, rm = 562, y = 50, lineH = 18;
+
+  function pdfLine(label, val, x1, x2) {
+    doc.setFont('helvetica','bold'); doc.setFontSize(9); doc.text(label, x1, y);
+    doc.setFont('helvetica','normal'); doc.text(String(val||''), x2, y);
+    y += lineH;
+  }
+  function section(title) {
+    y += 6;
+    doc.setFillColor(26,74,122); doc.rect(lm, y-12, rm-lm, 16, 'F');
+    doc.setTextColor(255,255,255); doc.setFont('helvetica','bold'); doc.setFontSize(10);
+    doc.text(title, lm+4, y); doc.setTextColor(0,0,0); y += 8;
+  }
+
+  // Header
+  doc.setFont('helvetica','bold'); doc.setFontSize(18); doc.setTextColor(26,74,122);
+  doc.text('S.O.S. Septic, Inc.', lm, y); y += 22;
+  doc.setFontSize(10); doc.setTextColor(80,80,80);
+  doc.text('sosseptic.com  •  Englewood, FL', lm, y); y += 16;
+  doc.setFont('helvetica','bold'); doc.setFontSize(14); doc.setTextColor(0,0,0);
+  doc.text((data.type || 'Septic') + ' Work Order', lm, y);
+  doc.setFontSize(12); doc.text(woNum, rm - doc.getTextWidth(woNum), y); y += 22;
+  doc.setDrawColor(180,180,180); doc.line(lm, y, rm, y); y += 14;
+
+  section('Customer & Job Information');
+  pdfLine('Bill To:', data.billTo, lm, lm+80);
+  pdfLine('Job Address:', data.job, lm, lm+80);
+  pdfLine('Phone 1:', data.phone1, lm, lm+80);
+  pdfLine('Phone 2:', data.phone2, lm, lm+80);
+
+  section('Job Details');
+  var col2 = (lm + rm) / 2 + 10;
+  doc.setFont('helvetica','bold'); doc.setFontSize(9);
+  doc.text('Date:', lm, y);     doc.setFont('helvetica','normal'); doc.text(data.date||'', lm+40, y);
+  doc.setFont('helvetica','bold'); doc.text('Time:', col2, y); doc.setFont('helvetica','normal'); doc.text(data.time||'', col2+40, y); y += lineH;
+  doc.setFont('helvetica','bold'); doc.text('Technician:', lm, y); doc.setFont('helvetica','normal'); doc.text(data.technician||'', lm+70, y); y += lineH;
+
+  if (data.type === 'Septic') {
+    doc.setFont('helvetica','bold'); doc.text('Pump Type:', lm, y); doc.setFont('helvetica','normal'); doc.text(data.pumpType||'', lm+70, y);
+    doc.setFont('helvetica','bold'); doc.text('Year Built:', col2, y); doc.setFont('helvetica','normal'); doc.text(String(data.yearBuilt||''), col2+60, y); y += lineH;
+    doc.setFont('helvetica','bold'); doc.text('Water Level:', lm, y); doc.setFont('helvetica','normal'); doc.text(data.waterLevel||'', lm+75, y);
+    doc.setFont('helvetica','bold'); doc.text('Scum:', col2, y); doc.setFont('helvetica','normal'); doc.text(data.scum||'', col2+35, y); y += lineH;
+    doc.setFont('helvetica','bold'); doc.text('Sludge:', lm, y); doc.setFont('helvetica','normal'); doc.text(data.sludge||'', lm+45, y);
+    doc.setFont('helvetica','bold'); doc.text('Tank Sound:', col2, y); doc.setFont('helvetica','normal'); doc.text(data.tankSound||'', col2+65, y); y += lineH;
+    doc.setFont('helvetica','bold'); doc.text('Compartment:', lm, y); doc.setFont('helvetica','normal'); doc.text(data.compartment||'', lm+78, y);
+    doc.setFont('helvetica','bold'); doc.text('Outlet T:', col2, y); doc.setFont('helvetica','normal'); doc.text(data.outletT||'', col2+50, y); y += lineH;
+    doc.setFont('helvetica','bold'); doc.text('Material:', lm, y); doc.setFont('helvetica','normal'); doc.text(data.material||'', lm+55, y);
+    doc.setFont('helvetica','bold'); doc.text('Drainfield:', col2, y); doc.setFont('helvetica','normal'); doc.text(data.drainfield||'', col2+60, y); y += lineH;
+  } else {
+    doc.setFont('helvetica','bold'); doc.text('Trap Location:', lm, y); doc.setFont('helvetica','normal'); doc.text(data.trapLocation||'', lm+82, y); y += lineH;
+  }
+
+  if (data.directions) {
+    doc.setFont('helvetica','bold'); doc.text('Directions:', lm, y); y += lineH;
+    doc.setFont('helvetica','normal'); doc.setFontSize(8);
+    var dLines = doc.splitTextToSize(data.directions, rm-lm-10);
+    doc.text(dLines, lm+10, y); y += dLines.length * 13; doc.setFontSize(9);
+  }
+
+  section('Services & Charges');
+  var colW = [260, 80, 90]; var cx = lm;
+  doc.setFont('helvetica','bold'); doc.setFontSize(9);
+  ['Description','Gallons','Amount'].forEach(function(h,i){ doc.text(h, cx, y); cx += colW[i]; });
+  y += 4; doc.setDrawColor(200,200,200); doc.line(lm, y, rm, y); y += 12;
+  doc.setFont('helvetica','normal');
+  (data.lineItems||[]).forEach(function(it) {
+    cx = lm;
+    doc.text(String(it.label||''), cx, y); cx += colW[0];
+    doc.text(String(it.gallons||''), cx, y); cx += colW[1];
+    doc.text(it.amount ? '$'+parseFloat(it.amount).toFixed(2) : '', cx, y); y += lineH;
+  });
+  y += 4; doc.line(lm, y, rm, y); y += 14;
+  doc.setFont('helvetica','bold'); doc.setFontSize(11);
+  var totalStr = 'Total: $' + (parseFloat(data.total)||0).toFixed(2);
+  doc.text(totalStr, rm - doc.getTextWidth(totalStr), y); y += 22;
+
+  section('Payment');
+  doc.setFontSize(9);
+  pdfLine('Billing:', data.billing, lm, lm+55);
+  pdfLine('Terms:',   data.terms,   lm, lm+55);
+  if (data.checkNum)  pdfLine('Check #:',  data.checkNum,          lm, lm+55);
+  if (data.paymentAmt) pdfLine('Payment:',  '$'+data.paymentAmt,   lm, lm+55);
+  if (data.comments) {
+    doc.setFont('helvetica','bold'); doc.text('Comments:', lm, y); y += lineH;
+    doc.setFont('helvetica','normal');
+    var cLines = doc.splitTextToSize(data.comments, rm-lm-10);
+    doc.text(cLines, lm+10, y); y += cLines.length * 13;
+  }
+
+  y += 10;
+  if (y > 680) { doc.addPage(); y = 50; }
+  doc.setFont('helvetica','bold'); doc.setFontSize(9);
+  doc.text('Customer Signature:', lm, y); y += 8;
+  if (!isSignatureEmpty()) {
+    doc.addImage(canvas.toDataURL('image/png'), 'PNG', lm, y, 200, 60); y += 68;
+  } else {
+    doc.setDrawColor(180); doc.rect(lm, y, 200, 55); y += 63;
+  }
+  doc.line(lm, y, lm+200, y); y += 14;
+  doc.text('Printed Name: ' + (data.signedBy||''), lm, y); y += lineH;
+  doc.setFont('helvetica','normal'); doc.setFontSize(8); doc.setTextColor(120);
+  doc.text('S.O.S. Septic, Inc. — sosseptic.com — Englewood, FL', lm, y);
+
+  doc.save(woNum + '_' + (data.billTo||'WO').replace(/[^a-zA-Z0-9]/g,'_') + '.pdf');
 }
 
+// ── Helpers ──
+function v(id) { var el = document.getElementById(id); return el ? el.value.trim() : ''; }
+function showSpinner(on) { document.getElementById('spinner').style.display = on ? 'flex' : 'none'; }
+function safeParseJson(s) { try { return JSON.parse(s); } catch(e) { return []; } }
 function escHtml(s) {
   return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
