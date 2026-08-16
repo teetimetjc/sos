@@ -1,0 +1,9 @@
+# clasp auth token — contains OAuth credentials, never commit
+.clasprc.json
+
+# node_modules if clasp is installed locally
+node_modules/
+
+# OS junk
+.DS_Store
+Thumbs.db
