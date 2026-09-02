@@ -134,6 +134,7 @@ header h1{font-size:1.1rem;font-weight:700;letter-spacing:.3px}
     <button id="navBtn-grease"  class="tab-btn"        onclick="showTab('grease')">Grease WO</button>
     <button id="navBtn-callin"  class="tab-btn"        onclick="showTab('callin')">Call-In</button>
     <button id="navBtn-history" class="tab-btn"        onclick="showTab('history')">History</button>
+    <button id="navBtn-salary"  class="tab-btn"        onclick="showTab('salary')">Salaries</button>
   </nav>
 
   <!-- ====== WORK ORDER FORM (shared by Septic + Grease tabs) ====== -->
@@ -500,6 +501,46 @@ header h1{font-size:1.1rem;font-weight:700;letter-spacing:.3px}
     <div style="height:20px"></div>
   </div><!-- /tabCallin -->
 
+  <!-- ====== SALARY RESEARCH TAB ====== -->
+  <div id="tabSalary" class="hide" style="margin-top:10px">
+
+    <div class="card">
+      <div class="section-title">Log a Director Position</div>
+      <div class="field"><label>Job Title *</label><input type="text" id="sal_title" placeholder="e.g. Director of Operations"></div>
+      <div class="row2">
+        <div class="field"><label>Date Logged *</label><input type="date" id="sal_dateLogged"></div>
+        <div class="field"><label>Status</label>
+          <select id="sal_status">
+            <option value="Active">Active</option>
+            <option value="Expired">Expired</option>
+            <option value="Applied">Applied</option>
+            <option value="Closed">Closed</option>
+          </select>
+        </div>
+      </div>
+      <div class="field"><label>Location</label><input type="text" id="sal_location" placeholder="e.g. Remote / Charlotte, NC"></div>
+      <div class="row2">
+        <div class="field"><label>Pay Min ($/yr)</label><input type="number" id="sal_payMin" min="0" step="1000" placeholder="e.g. 90000"></div>
+        <div class="field"><label>Pay Max ($/yr)</label><input type="number" id="sal_payMax" min="0" step="1000" placeholder="e.g. 120000"></div>
+      </div>
+      <div class="field"><label>Job URL</label><input type="url" id="sal_url" placeholder="https://jobs.greystar.com/…"></div>
+      <div class="field"><label>Notes</label><textarea id="sal_notes" placeholder="Qualifications, team size, anything worth remembering…"></textarea></div>
+    </div>
+
+    <div class="error-banner" id="salErrorBanner"><ul id="salErrorList"></ul></div>
+    <div class="success-banner" id="salSuccessBanner"></div>
+    <button class="btn-primary" id="salSaveBtn" onclick="saveSalary()">Log Position</button>
+
+    <div class="card" style="margin-top:16px">
+      <div class="section-title">Logged Positions</div>
+      <input type="text" class="search-input" id="salSearch" placeholder="Search by title, location, pay…" oninput="filterSalary()">
+      <div class="list-loading" id="salLoading"></div>
+      <div id="salList"></div>
+    </div>
+
+    <div style="height:20px"></div>
+  </div><!-- /tabSalary -->
+
   <!-- ====== HISTORY TAB ====== -->
   <div id="tabHistory" class="hide" style="margin-top:10px">
     <div class="card">
@@ -539,6 +580,7 @@ window.addEventListener('load', function() {
 
   document.getElementById('date').valueAsDate = new Date();
   document.getElementById('ci_date').valueAsDate = new Date();
+  document.getElementById('sal_dateLogged').valueAsDate = new Date();
 
   ctx.lineWidth = 2; ctx.lineCap = 'round'; ctx.strokeStyle = '#1a1a1a';
   applyType();
@@ -573,21 +615,23 @@ function isSignatureEmpty() {
 }
 
 // ── Tab navigation ──
-var TAB_CONTAINERS = { septic: 'tabWork', grease: 'tabWork', callin: 'tabCallin', history: 'tabHistory' };
+var TAB_CONTAINERS = { septic: 'tabWork', grease: 'tabWork', callin: 'tabCallin', history: 'tabHistory', salary: 'tabSalary' };
 
 function showTab(which) {
   var targetId = TAB_CONTAINERS[which];
+  var seen = {};
   Object.keys(TAB_CONTAINERS).forEach(function(t) {
     var id = TAB_CONTAINERS[t];
-    document.getElementById(id).classList.toggle('hide', id !== targetId);
+    if (!seen[id]) { document.getElementById(id).classList.toggle('hide', id !== targetId); seen[id] = true; }
   });
-  ['septic','grease','callin','history'].forEach(function(t) {
+  ['septic','grease','callin','history','salary'].forEach(function(t) {
     document.getElementById('navBtn-' + t).classList.toggle('active', t === which);
   });
   if (which === 'septic') { currentType = 'Septic';      applyType(); }
   if (which === 'grease') { currentType = 'Grease Trap'; applyType(); }
   if (which === 'history') loadHistory();
   if (which === 'callin')  loadCallIns();
+  if (which === 'salary')  loadSalary();
 }
 
 function applyType() {
@@ -1099,6 +1143,134 @@ function generatePdf(data, woNum) {
   doc.text('S.O.S. Septic, Inc. — sosseptic.com — Englewood, FL', lm, y);
 
   doc.save(woNum + '_' + (data.billTo||'WO').replace(/[^a-zA-Z0-9]/g,'_') + '.pdf');
+}
+
+// ── Salary research ──
+var allSalary = [];
+
+function loadSalary() {
+  var loading = document.getElementById('salLoading');
+  var list    = document.getElementById('salList');
+  loading.textContent = 'Loading…'; list.innerHTML = '';
+
+  fetch(window.location.href + '?action=list&sheet=salary&secret=' + encodeURIComponent(SECRET))
+    .then(function(r){ return r.json(); })
+    .then(function(data) {
+      loading.textContent = '';
+      if (!data.ok) { loading.textContent = 'Error: ' + data.error; return; }
+      allSalary = data.entries || [];
+      renderSalary(allSalary);
+    })
+    .catch(function(){ loading.textContent = 'Network error.'; });
+}
+
+function filterSalary() {
+  var q = document.getElementById('salSearch').value.toLowerCase();
+  renderSalary(q ? allSalary.filter(function(e){ return JSON.stringify(e).toLowerCase().indexOf(q) !== -1; }) : allSalary);
+}
+
+function renderSalary(entries) {
+  var list = document.getElementById('salList');
+  if (!entries.length) { list.innerHTML = '<p style="color:#888;font-size:.85rem;text-align:center;padding:16px">No positions logged yet.</p>'; return; }
+
+  list.innerHTML = entries.map(function(e) {
+    var title    = e['Title'] || '—';
+    var loc      = e['Location'] || '';
+    var dateLog  = e['Date Logged'] || '';
+    var payMin   = e['Pay Min'] ? '$' + Number(e['Pay Min']).toLocaleString() : '';
+    var payMax   = e['Pay Max'] ? '$' + Number(e['Pay Max']).toLocaleString() : '';
+    var payRange = payMin && payMax ? payMin + ' – ' + payMax : payMin || payMax || 'No salary listed';
+    var url      = e['URL'] || '';
+    var notes    = e['Notes'] || '';
+    var status   = e['Status'] || 'Active';
+    var id       = e['ID'] || '';
+    var statusColor = status === 'Active' ? '#27ae60' : status === 'Applied' ? '#2980b9' : '#888';
+    return '<div class="list-card">' +
+      '<div class="rec-num" style="display:flex;justify-content:space-between;align-items:center">' +
+        '<span>' + escHtml(title) + '</span>' +
+        '<span style="font-size:.75rem;font-weight:700;color:' + statusColor + '">' + escHtml(status) + '</span>' +
+      '</div>' +
+      '<div class="rec-meta" style="font-weight:600;color:#1a4a7a">' + escHtml(payRange) + '</div>' +
+      (loc    ? '<div class="rec-meta">' + escHtml(loc) + '</div>' : '') +
+      (dateLog? '<div class="rec-meta">Logged: ' + escHtml(dateLog) + '</div>' : '') +
+      (notes  ? '<div class="rec-meta" style="font-style:italic">' + escHtml(notes) + '</div>' : '') +
+      '<div class="rec-actions">' +
+        (url ? '<a href="' + escHtml(url) + '" target="_blank" style="padding:5px 12px;font-size:.8rem;font-weight:600;border:none;border-radius:5px;background:#e8edf4;color:#1a4a7a;text-decoration:none">Open</a>' : '') +
+        (id  ? '<button style="padding:5px 12px;font-size:.8rem;font-weight:600;border:none;border-radius:5px;background:#fde8e8;color:#c0392b;cursor:pointer" onclick="deleteSalary(' + JSON.stringify(id) + ')">Delete</button>' : '') +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function saveSalary() {
+  var errBanner  = document.getElementById('salErrorBanner');
+  var errList    = document.getElementById('salErrorList');
+  var succBanner = document.getElementById('salSuccessBanner');
+  var errors = [];
+
+  if (!v('sal_title'))     errors.push('Job Title is required.');
+  if (!v('sal_dateLogged')) errors.push('Date Logged is required.');
+
+  if (errors.length) {
+    errList.innerHTML = errors.map(function(e){ return '<li>' + escHtml(e) + '</li>'; }).join('');
+    errBanner.style.display = 'block'; succBanner.style.display = 'none';
+    errBanner.scrollIntoView({ behavior:'smooth', block:'nearest' });
+    return;
+  }
+  errBanner.style.display = 'none';
+
+  var payload = {
+    secret:     SECRET,
+    sheetType:  'salary',
+    title:      v('sal_title'),
+    dateLogged: v('sal_dateLogged'),
+    location:   v('sal_location'),
+    payMin:     v('sal_payMin'),
+    payMax:     v('sal_payMax'),
+    url:        v('sal_url'),
+    notes:      v('sal_notes'),
+    status:     v('sal_status')
+  };
+
+  showSpinner(true);
+  document.getElementById('salSaveBtn').disabled = true;
+
+  fetch(window.location.href, { method:'POST', body: JSON.stringify(payload) })
+    .then(function(r){ return r.json(); })
+    .then(function(data) {
+      showSpinner(false);
+      document.getElementById('salSaveBtn').disabled = false;
+      if (!data.ok) {
+        errList.innerHTML = '<li>' + escHtml(data.error || 'Unknown error') + '</li>';
+        errBanner.style.display = 'block'; return;
+      }
+      succBanner.textContent = 'Position logged!';
+      succBanner.style.display = 'block';
+      succBanner.scrollIntoView({ behavior:'smooth' });
+      ['sal_title','sal_location','sal_payMin','sal_payMax','sal_url','sal_notes'].forEach(function(id){
+        var el = document.getElementById(id); if(el) el.value = '';
+      });
+      document.getElementById('sal_dateLogged').valueAsDate = new Date();
+      document.getElementById('sal_status').value = 'Active';
+      loadSalary();
+    })
+    .catch(function(err) {
+      showSpinner(false);
+      document.getElementById('salSaveBtn').disabled = false;
+      errList.innerHTML = '<li>Network error: ' + escHtml(err.message) + '</li>';
+      errBanner.style.display = 'block';
+    });
+}
+
+function deleteSalary(id) {
+  if (!confirm('Remove this entry?')) return;
+  fetch(window.location.href + '?action=deleteSalary&secret=' + encodeURIComponent(SECRET) + '&id=' + encodeURIComponent(id))
+    .then(function(r){ return r.json(); })
+    .then(function(data) {
+      if (!data.ok) { alert('Could not delete: ' + (data.error || 'unknown')); return; }
+      loadSalary();
+    })
+    .catch(function(){ alert('Network error.'); });
 }
 
 // ── Helpers ──

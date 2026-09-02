@@ -4,8 +4,9 @@
 // ============================================================
 
 var SECRET = PropertiesService.getScriptProperties().getProperty('SECRET') || '';
-var SHEET_NAME   = 'WorkOrders';
-var CALLIN_SHEET = 'CallIns';
+var SHEET_NAME    = 'WorkOrders';
+var CALLIN_SHEET  = 'CallIns';
+var SALARY_SHEET  = 'SalaryResearch';
 
 // WorkOrders tab columns (A1:AJ1, 36 headers):
 //   ID | WO Number | Type | Date | Time | Bill To | Job | Phone 1 | Phone 2 |
@@ -33,11 +34,17 @@ function doGet(e) {
   if (action === 'list' && sheet === 'callins') {
     return jsonResponse(listCallIns(params.secret));
   }
+  if (action === 'list' && sheet === 'salary') {
+    return jsonResponse(listSalaryEntries(params.secret));
+  }
   if (action === 'list') {
     return jsonResponse(listOrders(params.secret));
   }
   if (action === 'lookup') {
     return jsonResponse(lookupCustomer(params.phone, params.secret));
+  }
+  if (action === 'deleteSalary') {
+    return jsonResponse(deleteSalaryEntry(params.id, params.secret));
   }
 
   // Serve the HTML app
@@ -58,6 +65,10 @@ function doPost(e) {
     if (payload.sheetType === 'callin') {
       var ciNum = saveCallIn(payload);
       return jsonResponse({ ok: true, ciNumber: ciNum });
+    }
+    if (payload.sheetType === 'salary') {
+      var salId = saveSalaryEntry(payload);
+      return jsonResponse({ ok: true, id: salId });
     }
     var woNum = saveOrder(payload);
     return jsonResponse({ ok: true, woNumber: woNum });
@@ -236,6 +247,66 @@ function listCallIns(secret) {
     if (callins.length >= 50) break;
   }
   return { ok: true, callins: callins };
+}
+
+// --------------- Salary research helpers ---------------
+
+function saveSalaryEntry(data) {
+  var ss    = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getSheetByName(SALARY_SHEET);
+  if (!sheet) {
+    sheet = ss.insertSheet(SALARY_SHEET);
+    sheet.appendRow(['ID','Date Logged','Title','Location','Pay Min','Pay Max','URL','Notes','Status','Saved At']);
+  }
+  var id  = Utilities.getUuid();
+  var now = new Date();
+  sheet.appendRow([
+    id,
+    data.dateLogged  || '',
+    data.title       || '',
+    data.location    || '',
+    data.payMin      || '',
+    data.payMax      || '',
+    data.url         || '',
+    data.notes       || '',
+    data.status      || 'Active',
+    now.toISOString()
+  ]);
+  return id;
+}
+
+function listSalaryEntries(secret) {
+  if (secret !== SECRET) return { ok: false, error: 'Unauthorized' };
+  var ss    = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getSheetByName(SALARY_SHEET);
+  if (!sheet) return { ok: true, entries: [] };
+  var data  = sheet.getDataRange().getValues();
+  if (data.length < 2) return { ok: true, entries: [] };
+
+  var headers = data[0];
+  var entries = [];
+  for (var i = data.length - 1; i >= 1; i--) {
+    var obj = {};
+    for (var j = 0; j < headers.length; j++) obj[headers[j]] = data[i][j];
+    entries.push(obj);
+  }
+  return { ok: true, entries: entries };
+}
+
+function deleteSalaryEntry(id, secret) {
+  if (secret !== SECRET) return { ok: false, error: 'Unauthorized' };
+  if (!id) return { ok: false, error: 'No ID provided' };
+  var ss    = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getSheetByName(SALARY_SHEET);
+  if (!sheet) return { ok: false, error: 'Sheet not found' };
+  var data  = sheet.getDataRange().getValues();
+  for (var i = 1; i < data.length; i++) {
+    if (String(data[i][0]) === String(id)) {
+      sheet.deleteRow(i + 1);
+      return { ok: true };
+    }
+  }
+  return { ok: false, error: 'Entry not found' };
 }
 
 // --------------- Number sequencing ---------------
