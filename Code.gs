@@ -305,6 +305,87 @@ function seedSalaryData() {
       notes:      'Salary from search index. Listing no longer active as of 2026-09-02.',
       status:     'Expired'
     },
+    // ── User-provided URLs, 2026-09-02 ──
+    {
+      title:      'Director of Compliance',
+      dateLogged: '2026-09-02',
+      location:   'Charleston, SC',
+      payMin:     '',
+      payMax:     '',
+      url:        'https://jobs.greystar.com/job/charleston/director-of-compliance/35302/98197459760',
+      notes:      'Salary not found in search — check listing',
+      status:     'Active'
+    },
+    {
+      title:      'Director, Program Management',
+      dateLogged: '2026-09-02',
+      location:   'Remote (United States)',
+      payMin:     '',
+      payMax:     '',
+      url:        'https://jobs.greystar.com/job/united-states/director-program-management/35302/96963226624',
+      notes:      'Salary not found in search — check listing',
+      status:     'Active'
+    },
+    {
+      title:      'Director of Real Estate',
+      dateLogged: '2026-09-02',
+      location:   'Tampa, FL',
+      payMin:     '',
+      payMax:     '',
+      url:        'https://jobs.greystar.com/job/tampa/director-of-real-estate/35302/99177178912',
+      notes:      'Salary not found in search — check listing',
+      status:     'Active'
+    },
+    {
+      title:      'Director, Development',
+      dateLogged: '2026-09-02',
+      location:   'Charlotte, NC',
+      payMin:     '',
+      payMax:     '',
+      url:        'https://jobs.greystar.com/job/charlotte/director-development/35302/99803788576',
+      notes:      'Salary not found in search — check listing',
+      status:     'Active'
+    },
+    {
+      title:      'Director, Insurance Captive & Accounting',
+      dateLogged: '2026-09-02',
+      location:   'Charleston, SC',
+      payMin:     '',
+      payMax:     '',
+      url:        'https://jobs.greystar.com/job/charleston/director-insurance-captive-and-accounting/35302/98859656544',
+      notes:      'Salary not found in search — check listing',
+      status:     'Active'
+    },
+    {
+      title:      'Director, Enablement & Engagement',
+      dateLogged: '2026-09-02',
+      location:   'Remote (United States)',
+      payMin:     130000,
+      payMax:     150000,
+      url:        'https://jobs.greystar.com/job/united-states/director-enablement-and-engagement/35302/98712652128',
+      notes:      'Salary from search index — verify on listing',
+      status:     'Active'
+    },
+    {
+      title:      'Director, Corporate Compliance',
+      dateLogged: '2026-09-02',
+      location:   'Charleston, SC',
+      payMin:     '',
+      payMax:     '',
+      url:        'https://jobs.greystar.com/job/charleston/director-corporate-compliance/35302/98049976848',
+      notes:      'Salary not found in search — check listing',
+      status:     'Active'
+    },
+    {
+      title:      'Director of Client Services',
+      dateLogged: '2026-09-02',
+      location:   'Orlando, FL',
+      payMin:     '',
+      payMax:     '',
+      url:        'https://jobs.greystar.com/job/orlando/director-of-client-services/35302/100021355728',
+      notes:      'Salary not found in search — check listing',
+      status:     'Active'
+    },
     {
       title:      'Director, Real Estate – New England Owned Assets',
       dateLogged: '2026-09-02',
