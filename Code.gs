@@ -253,6 +253,7 @@ function listCallIns(secret) {
 
 function seedSalaryData() {
   var entries = [
+    // ── User-verified (original log) ──
     {
       title:      'Director of Marketing',
       dateLogged: '2026-09-02',
@@ -282,6 +283,87 @@ function seedSalaryData() {
       url:        'https://jobs.greystar.com/job/charleston/director-external-communications/35302/94068008192',
       notes:      '',
       status:     'Expired'
+    },
+    // ── Found via search index 2026-09-02 (verify URL before citing) ──
+    {
+      title:      'Director, Procurement Governance & Systems – Operations',
+      dateLogged: '2026-09-02',
+      location:   'Remote (United States)',
+      payMin:     100000,
+      payMax:     140000,
+      url:        'https://jobs.greystar.com/job/united-states/director-procurement-governance-and-systems-operations/35302/97796775952',
+      notes:      'Salary from search index — verify on listing',
+      status:     'Active'
+    },
+    {
+      title:      'Director, Web Platform Engineering',
+      dateLogged: '2026-09-02',
+      location:   'Remote (United States)',
+      payMin:     150000,
+      payMax:     170000,
+      url:        'https://jobs.greystar.com/job/united-states/director-web-platform-engineering/35302/99366834224',
+      notes:      'Salary from search index — verify on listing',
+      status:     'Active'
+    },
+    {
+      title:      'Director, Real Estate – New England Owned Assets',
+      dateLogged: '2026-09-02',
+      location:   'Boston, MA',
+      payMin:     175000,
+      payMax:     185000,
+      url:        'https://jobs.greystar.com/job/boston/director-real-estate-new-england-owned-assets/35302/96969653872',
+      notes:      'Salary from search index — verify on listing',
+      status:     'Active'
+    },
+    {
+      title:      'Director, Real Estate',
+      dateLogged: '2026-09-02',
+      location:   'San Francisco, CA',
+      payMin:     175000,
+      payMax:     210000,
+      url:        'https://jobs.greystar.com/job/san-francisco/director-real-estate/35302/97759545488',
+      notes:      'Salary from search index — verify on listing',
+      status:     'Active'
+    },
+    {
+      title:      'Senior Director, Affordable Housing',
+      dateLogged: '2026-09-02',
+      location:   'Remote (United States)',
+      payMin:     158000,
+      payMax:     180000,
+      url:        'https://jobs.greystar.com/job/united-states/senior-director-affordable-housing/35302/95054509744',
+      notes:      'Salary from search index — verify on listing',
+      status:     'Active'
+    },
+    {
+      title:      'Senior Director, People & Culture Business Partner',
+      dateLogged: '2026-09-02',
+      location:   'South Carolina',
+      payMin:     150000,
+      payMax:     200000,
+      url:        'https://jobs.greystar.com/job/south-carolina/senior-director-people-and-culture-business-partner/35302/98436752992',
+      notes:      'Salary from search index — verify on listing',
+      status:     'Active'
+    },
+    {
+      title:      'Senior Director, Talent Development',
+      dateLogged: '2026-09-02',
+      location:   'Remote (United States)',
+      payMin:     175000,
+      payMax:     225000,
+      url:        'https://jobs.greystar.com/job/united-states/senior-director-talent-development/35302/95048536512',
+      notes:      'Salary from search index — verify on listing',
+      status:     'Active'
+    },
+    {
+      title:      'Managing Director, Global Benefits & Well-being',
+      dateLogged: '2026-09-02',
+      location:   'Remote (United States)',
+      payMin:     225000,
+      payMax:     275000,
+      url:        'https://jobs.greystar.com/job/united-states/managing-director-global-benefits-and-well-being/35302/95138092208',
+      notes:      'Salary from search index — verify on listing',
+      status:     'Active'
     }
   ];
 
