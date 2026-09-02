@@ -322,8 +322,8 @@ function seedSalaryData() {
       payMin:     175000,
       payMax:     210000,
       url:        'https://jobs.greystar.com/job/san-francisco/director-real-estate/35302/97759545488',
-      notes:      'Salary from search index — verify on listing',
-      status:     'Active'
+      notes:      'Salary from search index. Listing no longer active as of 2026-09-02.',
+      status:     'Expired'
     },
   ];
 
