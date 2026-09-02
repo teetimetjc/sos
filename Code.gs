@@ -249,6 +249,68 @@ function listCallIns(secret) {
   return { ok: true, callins: callins };
 }
 
+// --------------- Salary seed (run once from Apps Script editor) ---------------
+
+function seedSalaryData() {
+  var entries = [
+    {
+      title:      'Director of Marketing',
+      dateLogged: '2026-09-02',
+      location:   'Chicago, IL',
+      payMin:     135000,
+      payMax:     165000,
+      url:        'https://jobs.greystar.com/job/chicago/director-of-marketing/35302/92168771344',
+      notes:      'DOE',
+      status:     'Expired'
+    },
+    {
+      title:      'Director, Data Engineering',
+      dateLogged: '2026-09-02',
+      location:   'Remote (United States)',
+      payMin:     160000,
+      payMax:     195000,
+      url:        'https://jobs.greystar.com/job/united-states/director-data-engineering/35302/88017300368',
+      notes:      '',
+      status:     'Expired'
+    },
+    {
+      title:      'Director of External Communications',
+      dateLogged: '2026-09-02',
+      location:   'Charleston, SC',
+      payMin:     125000,
+      payMax:     170000,
+      url:        'https://jobs.greystar.com/job/charleston/director-external-communications/35302/94068008192',
+      notes:      '',
+      status:     'Expired'
+    }
+  ];
+
+  var ss    = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getSheetByName(SALARY_SHEET);
+  if (!sheet) {
+    sheet = ss.insertSheet(SALARY_SHEET);
+    sheet.appendRow(['ID','Date Logged','Title','Location','Pay Min','Pay Max','URL','Notes','Status','Saved At']);
+  }
+
+  var now = new Date().toISOString();
+  entries.forEach(function(e) {
+    sheet.appendRow([
+      Utilities.getUuid(),
+      e.dateLogged,
+      e.title,
+      e.location,
+      e.payMin,
+      e.payMax,
+      e.url,
+      e.notes,
+      e.status,
+      now
+    ]);
+  });
+
+  Logger.log('Seeded ' + entries.length + ' salary entries.');
+}
+
 // --------------- Salary research helpers ---------------
 
 function saveSalaryEntry(data) {
