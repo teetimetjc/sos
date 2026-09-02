@@ -302,8 +302,8 @@ function seedSalaryData() {
       payMin:     150000,
       payMax:     170000,
       url:        'https://jobs.greystar.com/job/united-states/director-web-platform-engineering/35302/99366834224',
-      notes:      'Salary from search index — verify on listing',
-      status:     'Active'
+      notes:      'Salary from search index. Listing no longer active as of 2026-09-02.',
+      status:     'Expired'
     },
     {
       title:      'Director, Real Estate – New England Owned Assets',
