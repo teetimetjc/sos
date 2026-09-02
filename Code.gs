@@ -325,46 +325,6 @@ function seedSalaryData() {
       notes:      'Salary from search index — verify on listing',
       status:     'Active'
     },
-    {
-      title:      'Senior Director, Affordable Housing',
-      dateLogged: '2026-09-02',
-      location:   'Remote (United States)',
-      payMin:     158000,
-      payMax:     180000,
-      url:        'https://jobs.greystar.com/job/united-states/senior-director-affordable-housing/35302/95054509744',
-      notes:      'Salary from search index — verify on listing',
-      status:     'Active'
-    },
-    {
-      title:      'Senior Director, People & Culture Business Partner',
-      dateLogged: '2026-09-02',
-      location:   'South Carolina',
-      payMin:     150000,
-      payMax:     200000,
-      url:        'https://jobs.greystar.com/job/south-carolina/senior-director-people-and-culture-business-partner/35302/98436752992',
-      notes:      'Salary from search index — verify on listing',
-      status:     'Active'
-    },
-    {
-      title:      'Senior Director, Talent Development',
-      dateLogged: '2026-09-02',
-      location:   'Remote (United States)',
-      payMin:     175000,
-      payMax:     225000,
-      url:        'https://jobs.greystar.com/job/united-states/senior-director-talent-development/35302/95048536512',
-      notes:      'Salary from search index — verify on listing',
-      status:     'Active'
-    },
-    {
-      title:      'Managing Director, Global Benefits & Well-being',
-      dateLogged: '2026-09-02',
-      location:   'Remote (United States)',
-      payMin:     225000,
-      payMax:     275000,
-      url:        'https://jobs.greystar.com/job/united-states/managing-director-global-benefits-and-well-being/35302/95138092208',
-      notes:      'Salary from search index — verify on listing',
-      status:     'Active'
-    }
   ];
 
   var ss    = SpreadsheetApp.getActiveSpreadsheet();
