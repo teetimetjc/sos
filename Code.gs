@@ -253,116 +253,85 @@ function listCallIns(secret) {
 
 function seedSalaryData() {
   var entries = [
-    // ── My log (user-provided salary + URL) ──
     {
-      title:      'Director of Marketing',
-      dateLogged: '2026-09-02',
-      location:   'Chicago, IL',
-      payMin:     135000,
-      payMax:     165000,
-      url:        'https://jobs.greystar.com/job/chicago/director-of-marketing/35302/92168771344',
-      notes:      'DOE',
-      source:     'My log',
-      status:     'Expired'
+      title:     'Director of Marketing',
+      dateSeen:  '2026-05-10',
+      location:  'Chicago, IL',
+      payMin:    135000,
+      payMax:    165000,
+      url:       'https://jobs.greystar.com/job/chicago/director-of-marketing/35302/92168771344',
+      notes:     'DOE',
+      status:    'Expired'
     },
     {
-      title:      'Director, Data Engineering',
-      dateLogged: '2026-09-02',
-      location:   'Remote (United States)',
-      payMin:     160000,
-      payMax:     195000,
-      url:        'https://jobs.greystar.com/job/united-states/director-data-engineering/35302/88017300368',
-      notes:      '',
-      source:     'My log',
-      status:     'Expired'
+      title:     'Director, Data Engineering',
+      dateSeen:  '2026-05-10',
+      location:  'Remote (United States)',
+      payMin:    160000,
+      payMax:    195000,
+      url:       'https://jobs.greystar.com/job/united-states/director-data-engineering/35302/88017300368',
+      notes:     '',
+      status:    'Expired'
     },
     {
-      title:      'Director of External Communications',
-      dateLogged: '2026-09-02',
-      location:   'Charleston, SC',
-      payMin:     125000,
-      payMax:     170000,
-      url:        'https://jobs.greystar.com/job/charleston/director-external-communications/35302/94068008192',
-      notes:      '',
-      source:     'My log',
-      status:     'Expired'
-    },
-    // ── Found via search (salary pulled from Google index) ──
-    {
-      title:      'Director, Procurement Governance & Systems – Operations',
-      dateLogged: '2026-09-02',
-      location:   'Remote (United States)',
-      payMin:     100000,
-      payMax:     140000,
-      url:        'https://jobs.greystar.com/job/united-states/director-procurement-governance-and-systems-operations/35302/97796775952',
-      notes:      'Salary from search index — verify on listing',
-      source:     'Search',
-      status:     'Active'
+      title:     'Director of External Communications',
+      dateSeen:  '2026-05-10',
+      location:  'Charleston, SC',
+      payMin:    125000,
+      payMax:    170000,
+      url:       'https://jobs.greystar.com/job/charleston/director-external-communications/35302/94068008192',
+      notes:     '',
+      status:    'Expired'
     },
     {
-      title:      'Director, Web Platform Engineering',
-      dateLogged: '2026-09-02',
-      location:   'Remote (United States)',
-      payMin:     150000,
-      payMax:     170000,
-      url:        'https://jobs.greystar.com/job/united-states/director-web-platform-engineering/35302/99366834224',
-      notes:      'Listing no longer active as of 2026-09-02',
-      source:     'Search',
-      status:     'Expired'
+      title:     'Director, Procurement Governance & Systems – Operations',
+      dateSeen:  '2026-09-02',
+      location:  'Remote (United States)',
+      payMin:    100000,
+      payMax:    140000,
+      url:       'https://jobs.greystar.com/job/united-states/director-procurement-governance-and-systems-operations/35302/97796775952',
+      notes:     'Salary from search index — verify on listing',
+      status:    'Active'
     },
     {
-      title:      'Director, Real Estate – New England Owned Assets',
-      dateLogged: '2026-09-02',
-      location:   'Boston, MA',
-      payMin:     175000,
-      payMax:     185000,
-      url:        'https://jobs.greystar.com/job/boston/director-real-estate-new-england-owned-assets/35302/96969653872',
-      notes:      'Salary from search index — verify on listing',
-      source:     'Search',
-      status:     'Active'
+      title:     'Director, Web Platform Engineering',
+      dateSeen:  '2026-09-02',
+      location:  'Remote (United States)',
+      payMin:    150000,
+      payMax:    170000,
+      url:       'https://jobs.greystar.com/job/united-states/director-web-platform-engineering/35302/99366834224',
+      notes:     'Listing no longer active as of 2026-09-02',
+      status:    'Expired'
     },
     {
-      title:      'Director, Real Estate',
-      dateLogged: '2026-09-02',
-      location:   'San Francisco, CA',
-      payMin:     175000,
-      payMax:     210000,
-      url:        'https://jobs.greystar.com/job/san-francisco/director-real-estate/35302/97759545488',
-      notes:      'Listing no longer active as of 2026-09-02',
-      source:     'Search',
-      status:     'Expired'
-    },
-    // ── My links (user-provided URL, salary from search index) ──
-    {
-      title:      'Director, Enablement & Engagement',
-      dateLogged: '2026-09-02',
-      location:   'Remote (United States)',
-      payMin:     130000,
-      payMax:     150000,
-      url:        'https://jobs.greystar.com/job/united-states/director-enablement-and-engagement/35302/98712652128',
-      notes:      'Salary from search index — verify on listing',
-      source:     'My links',
-      status:     'Active'
+      title:     'Director, Real Estate – New England Owned Assets',
+      dateSeen:  '2026-09-02',
+      location:  'Boston, MA',
+      payMin:    175000,
+      payMax:    185000,
+      url:       'https://jobs.greystar.com/job/boston/director-real-estate-new-england-owned-assets/35302/96969653872',
+      notes:     'Salary from search index — verify on listing',
+      status:    'Active'
     },
     {
-      title:      'Director, Corporate Compliance',
-      dateLogged: '2026-09-02',
-      location:   'Charleston, SC',
-      payMin:     '',
-      payMax:     '',
-      url:        'https://jobs.greystar.com/job/charleston/director-corporate-compliance/35302/98049976848',
-      notes:      'Salary not found in search — check listing',
-      status:     'Active'
+      title:     'Director, Real Estate',
+      dateSeen:  '2026-09-02',
+      location:  'San Francisco, CA',
+      payMin:    175000,
+      payMax:    210000,
+      url:       'https://jobs.greystar.com/job/san-francisco/director-real-estate/35302/97759545488',
+      notes:     'Listing no longer active as of 2026-09-02',
+      status:    'Expired'
     },
     {
-      title:      'Director of Client Services',
-      dateLogged: '2026-09-02',
-      location:   'Orlando, FL',
-      payMin:     '',
-      payMax:     '',
-      url:        'https://jobs.greystar.com/job/orlando/director-of-client-services/35302/100021355728',
-      notes:      'Salary not found in search — check listing',
-      status:     'Active'
+      title:     'Director, Enablement & Engagement',
+      dateSeen:  '2026-09-02',
+      location:  'Remote (United States)',
+      payMin:    130000,
+      payMax:    150000,
+      url:       'https://jobs.greystar.com/job/united-states/director-enablement-and-engagement/35302/98712652128',
+      notes:     'Salary from search index — verify on listing',
+      status:    'Active'
     },
   ];
 
@@ -370,21 +339,20 @@ function seedSalaryData() {
   var sheet = ss.getSheetByName(SALARY_SHEET);
   if (!sheet) {
     sheet = ss.insertSheet(SALARY_SHEET);
-    sheet.appendRow(['ID','Date Logged','Title','Location','Pay Min','Pay Max','URL','Notes','Source','Status','Saved At']);
+    sheet.appendRow(['ID','Date Seen','Title','Location','Pay Min','Pay Max','URL','Notes','Status','Saved At']);
   }
 
   var now = new Date().toISOString();
   entries.forEach(function(e) {
     sheet.appendRow([
       Utilities.getUuid(),
-      e.dateLogged,
+      e.dateSeen,
       e.title,
       e.location,
       e.payMin,
       e.payMax,
       e.url,
       e.notes,
-      e.source || 'My log',
       e.status,
       now
     ]);
@@ -400,20 +368,19 @@ function saveSalaryEntry(data) {
   var sheet = ss.getSheetByName(SALARY_SHEET);
   if (!sheet) {
     sheet = ss.insertSheet(SALARY_SHEET);
-    sheet.appendRow(['ID','Date Logged','Title','Location','Pay Min','Pay Max','URL','Notes','Source','Status','Saved At']);
+    sheet.appendRow(['ID','Date Seen','Title','Location','Pay Min','Pay Max','URL','Notes','Status','Saved At']);
   }
   var id  = Utilities.getUuid();
   var now = new Date();
   sheet.appendRow([
     id,
-    data.dateLogged  || '',
+    data.dateSeen    || '',
     data.title       || '',
     data.location    || '',
     data.payMin      || '',
     data.payMax      || '',
     data.url         || '',
     data.notes       || '',
-    data.source      || 'Manual',
     data.status      || 'Active',
     now.toISOString()
   ]);

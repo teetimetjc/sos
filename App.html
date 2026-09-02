@@ -508,7 +508,7 @@ header h1{font-size:1.1rem;font-weight:700;letter-spacing:.3px}
       <div class="section-title">Log a Director Position</div>
       <div class="field"><label>Job Title *</label><input type="text" id="sal_title" placeholder="e.g. Director of Operations"></div>
       <div class="row2">
-        <div class="field"><label>Date Logged *</label><input type="date" id="sal_dateLogged"></div>
+        <div class="field"><label>Date Seen *</label><input type="date" id="sal_dateSeen"></div>
         <div class="field"><label>Status</label>
           <select id="sal_status">
             <option value="Active">Active</option>
@@ -580,7 +580,7 @@ window.addEventListener('load', function() {
 
   document.getElementById('date').valueAsDate = new Date();
   document.getElementById('ci_date').valueAsDate = new Date();
-  document.getElementById('sal_dateLogged').valueAsDate = new Date();
+  document.getElementById('sal_dateSeen').valueAsDate = new Date();
 
   ctx.lineWidth = 2; ctx.lineCap = 'round'; ctx.strokeStyle = '#1a1a1a';
   applyType();
@@ -1176,30 +1176,24 @@ function renderSalary(entries) {
   list.innerHTML = entries.map(function(e) {
     var title    = e['Title'] || '—';
     var loc      = e['Location'] || '';
-    var dateLog  = e['Date Logged'] || '';
+    var dateSeen = e['Date Seen'] || '';
     var payMin   = e['Pay Min'] ? '$' + Number(e['Pay Min']).toLocaleString() : '';
     var payMax   = e['Pay Max'] ? '$' + Number(e['Pay Max']).toLocaleString() : '';
     var payRange = payMin && payMax ? payMin + ' – ' + payMax : payMin || payMax || 'No salary listed';
     var url      = e['URL'] || '';
     var notes    = e['Notes'] || '';
     var status   = e['Status'] || 'Active';
-    var source   = e['Source'] || '';
     var id       = e['ID'] || '';
     var statusColor = status === 'Active' ? '#27ae60' : status === 'Applied' ? '#2980b9' : '#888';
-    var sourceBg = source === 'My log' ? '#e8f8e8' : source === 'Search' ? '#e8f0fd' : source === 'My links' ? '#fff3cd' : '#f0f0f0';
-    var sourceColor = source === 'My log' ? '#1a6b1a' : source === 'Search' ? '#1a4a7a' : source === 'My links' ? '#856404' : '#555';
     return '<div class="list-card">' +
       '<div class="rec-num" style="display:flex;justify-content:space-between;align-items:center;gap:8px">' +
         '<span>' + escHtml(title) + '</span>' +
-        '<span style="display:flex;gap:6px;align-items:center;flex-shrink:0">' +
-          (source ? '<span style="font-size:.7rem;font-weight:700;padding:2px 7px;border-radius:10px;background:' + sourceBg + ';color:' + sourceColor + '">' + escHtml(source) + '</span>' : '') +
-          '<span style="font-size:.75rem;font-weight:700;color:' + statusColor + '">' + escHtml(status) + '</span>' +
-        '</span>' +
+        '<span style="font-size:.75rem;font-weight:700;color:' + statusColor + '">' + escHtml(status) + '</span>' +
       '</div>' +
       '<div class="rec-meta" style="font-weight:600;color:#1a4a7a">' + escHtml(payRange) + '</div>' +
-      (loc    ? '<div class="rec-meta">' + escHtml(loc) + '</div>' : '') +
-      (dateLog? '<div class="rec-meta">Logged: ' + escHtml(dateLog) + '</div>' : '') +
-      (notes  ? '<div class="rec-meta" style="font-style:italic">' + escHtml(notes) + '</div>' : '') +
+      (loc      ? '<div class="rec-meta">' + escHtml(loc) + '</div>' : '') +
+      (dateSeen ? '<div class="rec-meta">Seen: ' + escHtml(dateSeen) + '</div>' : '') +
+      (notes    ? '<div class="rec-meta" style="font-style:italic">' + escHtml(notes) + '</div>' : '') +
       '<div class="rec-actions">' +
         (url ? '<a href="' + escHtml(url) + '" target="_blank" style="padding:5px 12px;font-size:.8rem;font-weight:600;border:none;border-radius:5px;background:#e8edf4;color:#1a4a7a;text-decoration:none">Open</a>' : '') +
         (id  ? '<button style="padding:5px 12px;font-size:.8rem;font-weight:600;border:none;border-radius:5px;background:#fde8e8;color:#c0392b;cursor:pointer" onclick="deleteSalary(' + JSON.stringify(id) + ')">Delete</button>' : '') +
@@ -1214,8 +1208,8 @@ function saveSalary() {
   var succBanner = document.getElementById('salSuccessBanner');
   var errors = [];
 
-  if (!v('sal_title'))     errors.push('Job Title is required.');
-  if (!v('sal_dateLogged')) errors.push('Date Logged is required.');
+  if (!v('sal_title'))    errors.push('Job Title is required.');
+  if (!v('sal_dateSeen')) errors.push('Date Seen is required.');
 
   if (errors.length) {
     errList.innerHTML = errors.map(function(e){ return '<li>' + escHtml(e) + '</li>'; }).join('');
@@ -1229,13 +1223,12 @@ function saveSalary() {
     secret:     SECRET,
     sheetType:  'salary',
     title:      v('sal_title'),
-    dateLogged: v('sal_dateLogged'),
+    dateSeen:   v('sal_dateSeen'),
     location:   v('sal_location'),
     payMin:     v('sal_payMin'),
     payMax:     v('sal_payMax'),
     url:        v('sal_url'),
     notes:      v('sal_notes'),
-    source:     'Manual',
     status:     v('sal_status')
   };
 
@@ -1257,7 +1250,7 @@ function saveSalary() {
       ['sal_title','sal_location','sal_payMin','sal_payMax','sal_url','sal_notes'].forEach(function(id){
         var el = document.getElementById(id); if(el) el.value = '';
       });
-      document.getElementById('sal_dateLogged').valueAsDate = new Date();
+      document.getElementById('sal_dateSeen').valueAsDate = new Date();
       document.getElementById('sal_status').value = 'Active';
       loadSalary();
     })
