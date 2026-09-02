@@ -253,7 +253,7 @@ function listCallIns(secret) {
 
 function seedSalaryData() {
   var entries = [
-    // ── User-verified (original log) ──
+    // ── My log (user-provided salary + URL) ──
     {
       title:      'Director of Marketing',
       dateLogged: '2026-09-02',
@@ -262,6 +262,7 @@ function seedSalaryData() {
       payMax:     165000,
       url:        'https://jobs.greystar.com/job/chicago/director-of-marketing/35302/92168771344',
       notes:      'DOE',
+      source:     'My log',
       status:     'Expired'
     },
     {
@@ -272,6 +273,7 @@ function seedSalaryData() {
       payMax:     195000,
       url:        'https://jobs.greystar.com/job/united-states/director-data-engineering/35302/88017300368',
       notes:      '',
+      source:     'My log',
       status:     'Expired'
     },
     {
@@ -282,9 +284,10 @@ function seedSalaryData() {
       payMax:     170000,
       url:        'https://jobs.greystar.com/job/charleston/director-external-communications/35302/94068008192',
       notes:      '',
+      source:     'My log',
       status:     'Expired'
     },
-    // ── Found via search index 2026-09-02 (verify URL before citing) ──
+    // ── Found via search (salary pulled from Google index) ──
     {
       title:      'Director, Procurement Governance & Systems – Operations',
       dateLogged: '2026-09-02',
@@ -293,6 +296,7 @@ function seedSalaryData() {
       payMax:     140000,
       url:        'https://jobs.greystar.com/job/united-states/director-procurement-governance-and-systems-operations/35302/97796775952',
       notes:      'Salary from search index — verify on listing',
+      source:     'Search',
       status:     'Active'
     },
     {
@@ -302,60 +306,33 @@ function seedSalaryData() {
       payMin:     150000,
       payMax:     170000,
       url:        'https://jobs.greystar.com/job/united-states/director-web-platform-engineering/35302/99366834224',
-      notes:      'Salary from search index. Listing no longer active as of 2026-09-02.',
+      notes:      'Listing no longer active as of 2026-09-02',
+      source:     'Search',
       status:     'Expired'
     },
-    // ── User-provided URLs, 2026-09-02 ──
     {
-      title:      'Director of Compliance',
+      title:      'Director, Real Estate – New England Owned Assets',
       dateLogged: '2026-09-02',
-      location:   'Charleston, SC',
-      payMin:     '',
-      payMax:     '',
-      url:        'https://jobs.greystar.com/job/charleston/director-of-compliance/35302/98197459760',
-      notes:      'Salary not found in search — check listing',
+      location:   'Boston, MA',
+      payMin:     175000,
+      payMax:     185000,
+      url:        'https://jobs.greystar.com/job/boston/director-real-estate-new-england-owned-assets/35302/96969653872',
+      notes:      'Salary from search index — verify on listing',
+      source:     'Search',
       status:     'Active'
     },
     {
-      title:      'Director, Program Management',
+      title:      'Director, Real Estate',
       dateLogged: '2026-09-02',
-      location:   'Remote (United States)',
-      payMin:     '',
-      payMax:     '',
-      url:        'https://jobs.greystar.com/job/united-states/director-program-management/35302/96963226624',
-      notes:      'Salary not found in search — check listing',
-      status:     'Active'
+      location:   'San Francisco, CA',
+      payMin:     175000,
+      payMax:     210000,
+      url:        'https://jobs.greystar.com/job/san-francisco/director-real-estate/35302/97759545488',
+      notes:      'Listing no longer active as of 2026-09-02',
+      source:     'Search',
+      status:     'Expired'
     },
-    {
-      title:      'Director of Real Estate',
-      dateLogged: '2026-09-02',
-      location:   'Tampa, FL',
-      payMin:     '',
-      payMax:     '',
-      url:        'https://jobs.greystar.com/job/tampa/director-of-real-estate/35302/99177178912',
-      notes:      'Salary not found in search — check listing',
-      status:     'Active'
-    },
-    {
-      title:      'Director, Development',
-      dateLogged: '2026-09-02',
-      location:   'Charlotte, NC',
-      payMin:     '',
-      payMax:     '',
-      url:        'https://jobs.greystar.com/job/charlotte/director-development/35302/99803788576',
-      notes:      'Salary not found in search — check listing',
-      status:     'Active'
-    },
-    {
-      title:      'Director, Insurance Captive & Accounting',
-      dateLogged: '2026-09-02',
-      location:   'Charleston, SC',
-      payMin:     '',
-      payMax:     '',
-      url:        'https://jobs.greystar.com/job/charleston/director-insurance-captive-and-accounting/35302/98859656544',
-      notes:      'Salary not found in search — check listing',
-      status:     'Active'
-    },
+    // ── My links (user-provided URL, salary from search index) ──
     {
       title:      'Director, Enablement & Engagement',
       dateLogged: '2026-09-02',
@@ -364,6 +341,7 @@ function seedSalaryData() {
       payMax:     150000,
       url:        'https://jobs.greystar.com/job/united-states/director-enablement-and-engagement/35302/98712652128',
       notes:      'Salary from search index — verify on listing',
+      source:     'My links',
       status:     'Active'
     },
     {
@@ -386,33 +364,13 @@ function seedSalaryData() {
       notes:      'Salary not found in search — check listing',
       status:     'Active'
     },
-    {
-      title:      'Director, Real Estate – New England Owned Assets',
-      dateLogged: '2026-09-02',
-      location:   'Boston, MA',
-      payMin:     175000,
-      payMax:     185000,
-      url:        'https://jobs.greystar.com/job/boston/director-real-estate-new-england-owned-assets/35302/96969653872',
-      notes:      'Salary from search index — verify on listing',
-      status:     'Active'
-    },
-    {
-      title:      'Director, Real Estate',
-      dateLogged: '2026-09-02',
-      location:   'San Francisco, CA',
-      payMin:     175000,
-      payMax:     210000,
-      url:        'https://jobs.greystar.com/job/san-francisco/director-real-estate/35302/97759545488',
-      notes:      'Salary from search index. Listing no longer active as of 2026-09-02.',
-      status:     'Expired'
-    },
   ];
 
   var ss    = SpreadsheetApp.getActiveSpreadsheet();
   var sheet = ss.getSheetByName(SALARY_SHEET);
   if (!sheet) {
     sheet = ss.insertSheet(SALARY_SHEET);
-    sheet.appendRow(['ID','Date Logged','Title','Location','Pay Min','Pay Max','URL','Notes','Status','Saved At']);
+    sheet.appendRow(['ID','Date Logged','Title','Location','Pay Min','Pay Max','URL','Notes','Source','Status','Saved At']);
   }
 
   var now = new Date().toISOString();
@@ -426,6 +384,7 @@ function seedSalaryData() {
       e.payMax,
       e.url,
       e.notes,
+      e.source || 'My log',
       e.status,
       now
     ]);
@@ -441,7 +400,7 @@ function saveSalaryEntry(data) {
   var sheet = ss.getSheetByName(SALARY_SHEET);
   if (!sheet) {
     sheet = ss.insertSheet(SALARY_SHEET);
-    sheet.appendRow(['ID','Date Logged','Title','Location','Pay Min','Pay Max','URL','Notes','Status','Saved At']);
+    sheet.appendRow(['ID','Date Logged','Title','Location','Pay Min','Pay Max','URL','Notes','Source','Status','Saved At']);
   }
   var id  = Utilities.getUuid();
   var now = new Date();
@@ -454,6 +413,7 @@ function saveSalaryEntry(data) {
     data.payMax      || '',
     data.url         || '',
     data.notes       || '',
+    data.source      || 'Manual',
     data.status      || 'Active',
     now.toISOString()
   ]);

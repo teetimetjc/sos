@@ -1183,12 +1183,18 @@ function renderSalary(entries) {
     var url      = e['URL'] || '';
     var notes    = e['Notes'] || '';
     var status   = e['Status'] || 'Active';
+    var source   = e['Source'] || '';
     var id       = e['ID'] || '';
     var statusColor = status === 'Active' ? '#27ae60' : status === 'Applied' ? '#2980b9' : '#888';
+    var sourceBg = source === 'My log' ? '#e8f8e8' : source === 'Search' ? '#e8f0fd' : source === 'My links' ? '#fff3cd' : '#f0f0f0';
+    var sourceColor = source === 'My log' ? '#1a6b1a' : source === 'Search' ? '#1a4a7a' : source === 'My links' ? '#856404' : '#555';
     return '<div class="list-card">' +
-      '<div class="rec-num" style="display:flex;justify-content:space-between;align-items:center">' +
+      '<div class="rec-num" style="display:flex;justify-content:space-between;align-items:center;gap:8px">' +
         '<span>' + escHtml(title) + '</span>' +
-        '<span style="font-size:.75rem;font-weight:700;color:' + statusColor + '">' + escHtml(status) + '</span>' +
+        '<span style="display:flex;gap:6px;align-items:center;flex-shrink:0">' +
+          (source ? '<span style="font-size:.7rem;font-weight:700;padding:2px 7px;border-radius:10px;background:' + sourceBg + ';color:' + sourceColor + '">' + escHtml(source) + '</span>' : '') +
+          '<span style="font-size:.75rem;font-weight:700;color:' + statusColor + '">' + escHtml(status) + '</span>' +
+        '</span>' +
       '</div>' +
       '<div class="rec-meta" style="font-weight:600;color:#1a4a7a">' + escHtml(payRange) + '</div>' +
       (loc    ? '<div class="rec-meta">' + escHtml(loc) + '</div>' : '') +
@@ -1229,6 +1235,7 @@ function saveSalary() {
     payMax:     v('sal_payMax'),
     url:        v('sal_url'),
     notes:      v('sal_notes'),
+    source:     'Manual',
     status:     v('sal_status')
   };
 
