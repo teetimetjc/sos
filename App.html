@@ -514,6 +514,7 @@ header h1{font-size:1.1rem;font-weight:700;letter-spacing:.3px}
 
 <script>
 var SECRET = '<?= secret ?>';
+var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbytk0xVpQONk0q9A1qFXvTq3ZrD29RdKqFECUEjJXw_e3BSXR2nzx4TzXNLFcZIz7U5/exec';
 
 // ── State ──
 var currentType    = 'Septic';
@@ -601,7 +602,7 @@ function doLookup() {
   if (!phone) { setLookupStatus('Enter a phone number first.', '#c0392b'); return; }
   setLookupStatus('Searching…', '#888');
 
-  fetch(window.location.href + '?action=lookup&secret=' + encodeURIComponent(SECRET) + '&phone=' + encodeURIComponent(phone))
+  fetch(SCRIPT_URL + '?action=lookup&secret=' + encodeURIComponent(SECRET) + '&phone=' + encodeURIComponent(phone))
     .then(function(r){ return r.json(); })
     .then(function(data) {
       if (!data.ok) { setLookupStatus('Error: ' + data.error, '#c0392b'); return; }
@@ -739,7 +740,7 @@ function saveWorkOrder() {
   showSpinner(true);
   document.getElementById('saveBtn').disabled = true;
 
-  fetch(window.location.href, { method: 'POST', body: JSON.stringify(payload) })
+  fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) })
     .then(function(r){ return r.json(); })
     .then(function(data) {
       showSpinner(false);
@@ -857,7 +858,7 @@ function saveCallIn() {
   showSpinner(true);
   document.getElementById('ciSaveBtn').disabled = true;
 
-  fetch(window.location.href, { method: 'POST', body: JSON.stringify(payload) })
+  fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) })
     .then(function(r){ return r.json(); })
     .then(function(data) {
       showSpinner(false);
@@ -901,7 +902,7 @@ function loadCallIns() {
   var list    = document.getElementById('ciList');
   loading.textContent = 'Loading…'; list.innerHTML = '';
 
-  fetch(window.location.href + '?action=list&sheet=callins&secret=' + encodeURIComponent(SECRET))
+  fetch(SCRIPT_URL + '?action=list&sheet=callins&secret=' + encodeURIComponent(SECRET))
     .then(function(r){ return r.json(); })
     .then(function(data) {
       loading.textContent = '';
@@ -940,7 +941,7 @@ function renderCallIns(items) {
 function loadHistory() {
   document.getElementById('histLoading').textContent = 'Loading…';
   document.getElementById('historyList').innerHTML = '';
-  fetch(window.location.href + '?action=list&secret=' + encodeURIComponent(SECRET))
+  fetch(SCRIPT_URL + '?action=list&secret=' + encodeURIComponent(SECRET))
     .then(function(r){ return r.json(); })
     .then(function(data) {
       document.getElementById('histLoading').textContent = '';
