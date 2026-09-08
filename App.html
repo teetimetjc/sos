@@ -336,7 +336,7 @@ header h1{font-size:1.1rem;font-weight:700;letter-spacing:.3px}
     </div>
 
     <!-- Save WO -->
-    <div id="editBanner" style="display:none;background:#fff3cd;border:1.5px solid #f0ad4e;border-radius:8px;padding:10px 14px;margin-bottom:10px;font-size:.88rem;font-weight:600;color:#7a5200;display:flex;align-items:center;justify-content:space-between;gap:10px">
+    <div id="editBanner" style="display:none;background:#fff3cd;border:1.5px solid #f0ad4e;border-radius:8px;padding:10px 14px;margin-bottom:10px;font-size:.88rem;font-weight:600;color:#7a5200;align-items:center;justify-content:space-between;gap:10px">
       <span id="editBannerText"></span>
       <button onclick="cancelEdit()" style="background:#f0ad4e;border:none;border-radius:6px;padding:5px 12px;font-weight:700;font-size:.82rem;color:#fff;cursor:pointer">Cancel Edit</button>
     </div>
@@ -985,7 +985,7 @@ function renderHistory(orders) {
     return '<div class="list-card">' +
       '<div class="rec-num">' + escHtml(woNum) + ' <span style="font-weight:400;color:#888;font-size:.8rem">— ' + escHtml(type) + '</span></div>' +
       '<div class="rec-meta">' + escHtml(billTo) + (date ? ' &nbsp;|&nbsp; ' + escHtml(date) : '') + (total ? ' &nbsp;|&nbsp; ' + escHtml(total) : '') + '</div>' +
-      '<div class="rec-actions"><button class="btn-pdf" onclick="loadEdit(' + JSON.stringify(JSON.stringify(o)) + ')">Edit</button></div>' +
+      '<div class="rec-actions"><button class="btn-pdf" onclick="loadEdit(' + escHtml(JSON.stringify(JSON.stringify(o))) + ')">Edit</button></div>' +
     '</div>';
   }).join('');
 }
