@@ -7,12 +7,12 @@ var SECRET = PropertiesService.getScriptProperties().getProperty('SECRET') || ''
 var SHEET_NAME   = 'WorkOrders';
 var CALLIN_SHEET = 'CallIns';
 
-// WorkOrders tab columns (A1:AJ1, 36 headers):
+// WorkOrders tab columns (A1:AK1, 37 headers):
 //   ID | WO Number | Type | Date | Time | Bill To | Job | Phone 1 | Phone 2 |
 //   Pumpout Ordered | Technician | Pump Type | Year Built | Water Level | Drainfield |
 //   Scum | Sludge | Tank Sound | Compartment | Outlet T | Material | Trap Location |
 //   Directions | Schedule | LPO | Next Pump | Special Notes | Line Items JSON | Total |
-//   Billing | Terms | Check Num | Payment Amt | Comments | Signed By | Saved At
+//   Billing | Terms | Check Num | Payment Amt | Comments | Signed By | Client Email | Saved At
 
 // CallIns tab columns (A1:AE1, 31 headers):
 //   ID | CI Number | Rep | Date | Scheduled Date | Scheduled Time |
@@ -111,6 +111,7 @@ function saveOrder(data) {
     data.paymentAmt || '',
     data.comments || '',
     data.signedBy || '',
+    data.clientEmail || '',
     now.toISOString()
   ]);
   return woNum;
@@ -160,6 +161,7 @@ function lookupCustomer(phone, secret) {
           job:         row[idx['Job']],
           phone1:      row[idx['Phone 1']],
           phone2:      row[idx['Phone 2']],
+          clientEmail: row[idx['Client Email']],
           material:    row[idx['Material']],
           compartment: row[idx['Compartment']],
           outletT:     row[idx['Outlet T']],

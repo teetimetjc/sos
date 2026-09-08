@@ -164,6 +164,10 @@ header h1{font-size:1.1rem;font-weight:700;letter-spacing:.3px}
         <div class="field"><label>Phone 1</label><input type="tel" id="phone1" placeholder="Primary phone"></div>
         <div class="field"><label>Phone 2</label><input type="tel" id="phone2" placeholder="Secondary phone"></div>
       </div>
+      <div class="field">
+        <label>Client Email</label>
+        <input type="email" id="clientEmail" placeholder="customer@example.com (for sending receipt later)">
+      </div>
     </div>
 
     <!-- Job details -->
@@ -616,6 +620,7 @@ function doLookup() {
       fillIfEmpty('job',         c.job);
       fillIfEmpty('phone1',      c.phone1);
       fillIfEmpty('phone2',      c.phone2);
+      fillIfEmpty('clientEmail', c.clientEmail);
       fillIfEmpty('material',    c.material);
       fillIfEmpty('compartment', c.compartment);
       fillIfEmpty('outletT',     c.outletT);
@@ -725,6 +730,7 @@ function saveWorkOrder() {
     date: v('date'), time: v('time'),
     billTo: v('billTo'), job: v('job'),
     phone1: v('phone1'), phone2: v('phone2'),
+    clientEmail: v('clientEmail'),
     pumpoutOrdered: v('pumpoutOrdered'),
     technician: v('technician'),
     pumpType: v('pumpType'), yearBuilt: v('yearBuilt'),
@@ -777,7 +783,7 @@ function saveWorkOrder() {
 }
 
 function resetWoForm() {
-  ['billTo','job','phone1','phone2','pumpoutOrdered','technician','pumpType',
+  ['billTo','job','phone1','phone2','clientEmail','pumpoutOrdered','technician','pumpType',
    'yearBuilt','waterLevel','drainfield','scum','sludge','tankSound','compartment',
    'outletT','material','trapLocation','directions','schedule','lpo','nextPump',
    'specialNotes','billing','terms','checkNum','paymentAmt','comments','signedBy','lookupPhone'
@@ -994,7 +1000,7 @@ function reprintPdf(jsonStr) {
   var o = JSON.parse(jsonStr);
   generatePdf({
     type: o['Type'], date: o['Date'], time: o['Time'],
-    billTo: o['Bill To'], job: o['Job'], phone1: o['Phone 1'], phone2: o['Phone 2'],
+    billTo: o['Bill To'], job: o['Job'], phone1: o['Phone 1'], phone2: o['Phone 2'], clientEmail: o['Client Email'],
     pumpoutOrdered: o['Pumpout Ordered'], technician: o['Technician'],
     pumpType: o['Pump Type'], yearBuilt: o['Year Built'], waterLevel: o['Water Level'],
     drainfield: o['Drainfield'], scum: o['Scum'], sludge: o['Sludge'],
@@ -1032,6 +1038,7 @@ function loadEdit(jsonStr) {
   sv('job',           o['Job']);
   sv('phone1',        o['Phone 1']);
   sv('phone2',        o['Phone 2']);
+  sv('clientEmail',   o['Client Email']);
   sv('pumpoutOrdered',o['Pumpout Ordered']);
   sv('technician',    o['Technician']);
   sv('pumpType',      o['Pump Type']);
@@ -1113,6 +1120,7 @@ function generatePdf(data, woNum) {
   pdfLine('Job Address:', data.job, lm, lm+80);
   pdfLine('Phone 1:', data.phone1, lm, lm+80);
   pdfLine('Phone 2:', data.phone2, lm, lm+80);
+  if (data.clientEmail) pdfLine('Email:', data.clientEmail, lm, lm+80);
 
   section('Job Details');
   var col2 = (lm + rm) / 2 + 10;
