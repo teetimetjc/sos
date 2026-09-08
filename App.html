@@ -336,6 +336,10 @@ header h1{font-size:1.1rem;font-weight:700;letter-spacing:.3px}
     </div>
 
     <!-- Save WO -->
+    <div id="editBanner" style="display:none;background:#fff3cd;border:1.5px solid #f0ad4e;border-radius:8px;padding:10px 14px;margin-bottom:10px;font-size:.88rem;font-weight:600;color:#7a5200;display:flex;align-items:center;justify-content:space-between;gap:10px">
+      <span id="editBannerText"></span>
+      <button onclick="cancelEdit()" style="background:#f0ad4e;border:none;border-radius:6px;padding:5px 12px;font-weight:700;font-size:.82rem;color:#fff;cursor:pointer">Cancel Edit</button>
+    </div>
     <div class="error-banner" id="woErrorBanner"><ul id="woErrorList"></ul></div>
     <div class="success-banner" id="woSuccessBanner"></div>
     <button class="btn-primary" id="saveBtn" onclick="saveWorkOrder()">Save Work Order</button>
@@ -716,6 +720,7 @@ function saveWorkOrder() {
   var total   = calcTotal();
   var payload = {
     secret: SECRET,
+    id: editingId || undefined,
     type: currentType,
     date: v('date'), time: v('time'),
     billTo: v('billTo'), job: v('job'),
@@ -750,10 +755,17 @@ function saveWorkOrder() {
         errBanner.style.display = 'block';
         return;
       }
-      succBanner.textContent = 'Saved! Work Order ' + data.woNumber + ' created.';
+      var wasEdit = !!editingId;
+      var woNum   = data.woNumber || editingWoNum;
+      succBanner.innerHTML = (wasEdit ? 'Updated! ' : 'Saved! ') + escHtml(woNum) +
+        ' &nbsp;<button onclick="generatePdf(' + escHtml(JSON.stringify(payload)) + ',' + escHtml(JSON.stringify(woNum)) + ')" ' +
+        'style="padding:4px 12px;background:#1a4a7a;color:#fff;border:none;border-radius:5px;font-weight:700;font-size:.82rem;cursor:pointer">Download PDF</button>';
       succBanner.style.display = 'block';
       succBanner.scrollIntoView({ behavior: 'smooth' });
-      generatePdf(payload, data.woNumber);
+      editingId    = null;
+      editingWoNum = null;
+      document.getElementById('editBanner').style.display = 'none';
+      document.getElementById('saveBtn').textContent = 'Save Work Order';
       resetWoForm();
     })
     .catch(function(err) {
@@ -777,6 +789,10 @@ function resetWoForm() {
   calcTotal();
   clearSignature();
   document.getElementById('lookupStatus').textContent = '';
+  editingId    = null;
+  editingWoNum = null;
+  document.getElementById('editBanner').style.display = 'none';
+  document.getElementById('saveBtn').textContent = 'Save Work Order';
   applyType();
 }
 
@@ -969,7 +985,7 @@ function renderHistory(orders) {
     return '<div class="list-card">' +
       '<div class="rec-num">' + escHtml(woNum) + ' <span style="font-weight:400;color:#888;font-size:.8rem">— ' + escHtml(type) + '</span></div>' +
       '<div class="rec-meta">' + escHtml(billTo) + (date ? ' &nbsp;|&nbsp; ' + escHtml(date) : '') + (total ? ' &nbsp;|&nbsp; ' + escHtml(total) : '') + '</div>' +
-      '<div class="rec-actions"><button class="btn-pdf" onclick="reprintPdf(' + JSON.stringify(JSON.stringify(o)) + ')">PDF</button></div>' +
+      '<div class="rec-actions"><button class="btn-pdf" onclick="loadEdit(' + JSON.stringify(JSON.stringify(o)) + ')">Edit</button></div>' +
     '</div>';
   }).join('');
 }
@@ -991,6 +1007,78 @@ function reprintPdf(jsonStr) {
     checkNum: o['Check Num'], paymentAmt: o['Payment Amt'],
     comments: o['Comments'], signedBy: o['Signed By']
   }, o['WO Number'] || 'WO');
+}
+
+// ── Edit mode ──
+var editingId   = null;
+var editingWoNum = null;
+
+function loadEdit(jsonStr) {
+  var o = JSON.parse(jsonStr);
+  resetWoForm();
+  editingId    = o['ID'] || o['id'] || null;
+  editingWoNum = o['WO Number'] || '';
+
+  // Determine tab type
+  var type = (o['Type'] || 'Septic').toLowerCase().indexOf('grease') !== -1 ? 'Grease Trap' : 'Septic';
+  currentType = type;
+  applyType();
+  showTab(type === 'Grease Trap' ? 'grease' : 'septic');
+
+  function sv(id, val) { var el = document.getElementById(id); if (el && val != null) el.value = String(val); }
+  sv('date',          o['Date']);
+  sv('time',          o['Time']);
+  sv('billTo',        o['Bill To']);
+  sv('job',           o['Job']);
+  sv('phone1',        o['Phone 1']);
+  sv('phone2',        o['Phone 2']);
+  sv('pumpoutOrdered',o['Pumpout Ordered']);
+  sv('technician',    o['Technician']);
+  sv('pumpType',      o['Pump Type']);
+  sv('yearBuilt',     o['Year Built']);
+  sv('waterLevel',    o['Water Level']);
+  sv('drainfield',    o['Drainfield']);
+  sv('scum',          o['Scum']);
+  sv('sludge',        o['Sludge']);
+  sv('tankSound',     o['Tank Sound']);
+  sv('compartment',   o['Compartment']);
+  sv('outletT',       o['Outlet T']);
+  sv('material',      o['Material']);
+  sv('trapLocation',  o['Trap Location']);
+  sv('directions',    o['Directions']);
+  sv('schedule',      o['Schedule']);
+  sv('lpo',           o['LPO']);
+  sv('nextPump',      o['Next Pump']);
+  sv('specialNotes',  o['Special Notes']);
+  sv('billing',       o['Billing']);
+  sv('terms',         o['Terms']);
+  sv('checkNum',      o['Check Num']);
+  sv('paymentAmt',    o['Payment Amt']);
+  sv('comments',      o['Comments']);
+  sv('signedBy',      o['Signed By']);
+
+  // Restore line items
+  var items = safeParseJson(o['Line Items JSON']) || [];
+  document.getElementById('lineItemsBody').innerHTML = '';
+  lineItemCounter = 0;
+  items.forEach(function(it) { addLineItem(it.label, it.gallons, it.amount); });
+  calcTotal();
+
+  // Show edit banner
+  var banner = document.getElementById('editBanner');
+  document.getElementById('editBannerText').textContent = 'Editing ' + editingWoNum + ' — changes will overwrite the original record';
+  banner.style.display = 'flex';
+  document.getElementById('saveBtn').textContent = 'Save Changes';
+  document.getElementById('woSuccessBanner').style.display = 'none';
+  banner.scrollIntoView({ behavior: 'smooth' });
+}
+
+function cancelEdit() {
+  editingId    = null;
+  editingWoNum = null;
+  document.getElementById('editBanner').style.display = 'none';
+  document.getElementById('saveBtn').textContent = 'Save Work Order';
+  resetWoForm();
 }
 
 // ── PDF generation ──
