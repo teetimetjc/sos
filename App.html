@@ -1028,23 +1028,23 @@ function generatePdf(data, woNum) {
   section('Job Details');
   var col2 = (lm + rm) / 2 + 10;
   doc.setFont('helvetica','bold'); doc.setFontSize(9);
-  doc.text('Date:', lm, y);     doc.setFont('helvetica','normal'); doc.text(data.date||'', lm+40, y);
-  doc.setFont('helvetica','bold'); doc.text('Time:', col2, y); doc.setFont('helvetica','normal'); doc.text(data.time||'', col2+40, y); y += lineH;
-  doc.setFont('helvetica','bold'); doc.text('Technician:', lm, y); doc.setFont('helvetica','normal'); doc.text(data.technician||'', lm+70, y); y += lineH;
+  doc.text('Date:', lm, y);     doc.setFont('helvetica','normal'); doc.text(String(data.date||''), lm+40, y);
+  doc.setFont('helvetica','bold'); doc.text('Time:', col2, y); doc.setFont('helvetica','normal'); doc.text(String(data.time||''), col2+40, y); y += lineH;
+  doc.setFont('helvetica','bold'); doc.text('Technician:', lm, y); doc.setFont('helvetica','normal'); doc.text(String(data.technician||''), lm+70, y); y += lineH;
 
   if (data.type === 'Septic') {
-    doc.setFont('helvetica','bold'); doc.text('Pump Type:', lm, y); doc.setFont('helvetica','normal'); doc.text(data.pumpType||'', lm+70, y);
+    doc.setFont('helvetica','bold'); doc.text('Pump Type:', lm, y); doc.setFont('helvetica','normal'); doc.text(String(data.pumpType||''), lm+70, y);
     doc.setFont('helvetica','bold'); doc.text('Year Built:', col2, y); doc.setFont('helvetica','normal'); doc.text(String(data.yearBuilt||''), col2+60, y); y += lineH;
-    doc.setFont('helvetica','bold'); doc.text('Water Level:', lm, y); doc.setFont('helvetica','normal'); doc.text(data.waterLevel||'', lm+75, y);
-    doc.setFont('helvetica','bold'); doc.text('Scum:', col2, y); doc.setFont('helvetica','normal'); doc.text(data.scum||'', col2+35, y); y += lineH;
-    doc.setFont('helvetica','bold'); doc.text('Sludge:', lm, y); doc.setFont('helvetica','normal'); doc.text(data.sludge||'', lm+45, y);
-    doc.setFont('helvetica','bold'); doc.text('Tank Sound:', col2, y); doc.setFont('helvetica','normal'); doc.text(data.tankSound||'', col2+65, y); y += lineH;
-    doc.setFont('helvetica','bold'); doc.text('Compartment:', lm, y); doc.setFont('helvetica','normal'); doc.text(data.compartment||'', lm+78, y);
-    doc.setFont('helvetica','bold'); doc.text('Outlet T:', col2, y); doc.setFont('helvetica','normal'); doc.text(data.outletT||'', col2+50, y); y += lineH;
-    doc.setFont('helvetica','bold'); doc.text('Material:', lm, y); doc.setFont('helvetica','normal'); doc.text(data.material||'', lm+55, y);
-    doc.setFont('helvetica','bold'); doc.text('Drainfield:', col2, y); doc.setFont('helvetica','normal'); doc.text(data.drainfield||'', col2+60, y); y += lineH;
+    doc.setFont('helvetica','bold'); doc.text('Water Level:', lm, y); doc.setFont('helvetica','normal'); doc.text(String(data.waterLevel||''), lm+75, y);
+    doc.setFont('helvetica','bold'); doc.text('Scum:', col2, y); doc.setFont('helvetica','normal'); doc.text(String(data.scum||''), col2+35, y); y += lineH;
+    doc.setFont('helvetica','bold'); doc.text('Sludge:', lm, y); doc.setFont('helvetica','normal'); doc.text(String(data.sludge||''), lm+45, y);
+    doc.setFont('helvetica','bold'); doc.text('Tank Sound:', col2, y); doc.setFont('helvetica','normal'); doc.text(String(data.tankSound||''), col2+65, y); y += lineH;
+    doc.setFont('helvetica','bold'); doc.text('Compartment:', lm, y); doc.setFont('helvetica','normal'); doc.text(String(data.compartment||''), lm+78, y);
+    doc.setFont('helvetica','bold'); doc.text('Outlet T:', col2, y); doc.setFont('helvetica','normal'); doc.text(String(data.outletT||''), col2+50, y); y += lineH;
+    doc.setFont('helvetica','bold'); doc.text('Material:', lm, y); doc.setFont('helvetica','normal'); doc.text(String(data.material||''), lm+55, y);
+    doc.setFont('helvetica','bold'); doc.text('Drainfield:', col2, y); doc.setFont('helvetica','normal'); doc.text(String(data.drainfield||''), col2+60, y); y += lineH;
   } else {
-    doc.setFont('helvetica','bold'); doc.text('Trap Location:', lm, y); doc.setFont('helvetica','normal'); doc.text(data.trapLocation||'', lm+82, y); y += lineH;
+    doc.setFont('helvetica','bold'); doc.text('Trap Location:', lm, y); doc.setFont('helvetica','normal'); doc.text(String(data.trapLocation||''), lm+82, y); y += lineH;
   }
 
   if (data.directions) {
