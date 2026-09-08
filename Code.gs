@@ -12,7 +12,7 @@ var CALLIN_SHEET = 'CallIns';
 //   Pumpout Ordered | Technician | Pump Type | Year Built | Water Level | Drainfield |
 //   Scum | Sludge | Tank Sound | Compartment | Outlet T | Material | Trap Location |
 //   Directions | Schedule | LPO | Next Pump | Special Notes | Line Items JSON | Total |
-//   Billing | Terms | Check Num | Payment Amt | Comments | Signed By | Client Email | Saved At
+//   Billing | Terms | Check Num | Payment Amt | Comments | Signed By | Saved At | Client Email
 
 // CallIns tab columns (A1:AE1, 31 headers):
 //   ID | CI Number | Rep | Date | Scheduled Date | Scheduled Time |
@@ -111,8 +111,8 @@ function saveOrder(data) {
     data.paymentAmt || '',
     data.comments || '',
     data.signedBy || '',
-    data.clientEmail || '',
-    now.toISOString()
+    now.toISOString(),
+    data.clientEmail || ''
   ]);
   return woNum;
 }
