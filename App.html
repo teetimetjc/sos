@@ -1102,7 +1102,7 @@ function generatePdf(data, woNum) {
     y += 6;
     doc.setFillColor(26,74,122); doc.rect(lm, y-12, rm-lm, 16, 'F');
     doc.setTextColor(255,255,255); doc.setFont('helvetica','bold'); doc.setFontSize(10);
-    doc.text(title, lm+4, y); doc.setTextColor(0,0,0); y += 8;
+    doc.text(title, lm+4, y); doc.setTextColor(0,0,0); y += lineH;
   }
 
   // Header
