@@ -7,12 +7,13 @@ var SECRET = PropertiesService.getScriptProperties().getProperty('SECRET') || ''
 var SHEET_NAME   = 'WorkOrders';
 var CALLIN_SHEET = 'CallIns';
 
-// WorkOrders tab columns (A1:AK1, 37 headers):
+// WorkOrders tab columns (A1:AL1, 38 headers):
 //   ID | WO Number | Type | Date | Time | Bill To | Job | Phone 1 | Phone 2 |
 //   Pumpout Ordered | Technician | Pump Type | Year Built | Water Level | Drainfield |
 //   Scum | Sludge | Tank Sound | Compartment | Outlet T | Material | Trap Location |
 //   Directions | Schedule | LPO | Next Pump | Special Notes | Line Items JSON | Total |
-//   Billing | Terms | Check Num | Payment Amt | Comments | Signed By | Saved At | Client Email
+//   Billing | Terms | Check Num | Payment Amt | Comments | Signed By | Saved At | Client Email |
+//   Signature Data
 
 // CallIns tab columns (A1:AE1, 31 headers):
 //   ID | CI Number | Rep | Date | Scheduled Date | Scheduled Time |
@@ -90,7 +91,8 @@ function exportRowAsPdf() {
     checkNum:    fmtVal(raw['Check Num']),
     paymentAmt:  fmtVal(raw['Payment Amt']),
     comments:    fmtVal(raw['Comments']),
-    signedBy:    fmtVal(raw['Signed By'])
+    signedBy:    fmtVal(raw['Signed By']),
+    sigData:     raw['Signature Data'] || ''
   };
 
   var woNum = fmtVal(raw['WO Number']) || 'WO-?????';
@@ -189,7 +191,8 @@ function saveOrder(data) {
     data.comments || '',
     data.signedBy || '',
     now.toISOString(),
-    data.clientEmail || ''
+    data.clientEmail || '',
+    data.sigData || ''
   ]);
   return woNum;
 }

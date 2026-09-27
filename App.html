@@ -1012,7 +1012,8 @@ function reprintPdf(jsonStr) {
     lineItems: safeParseJson(o['Line Items JSON']),
     total: o['Total'], billing: o['Billing'], terms: o['Terms'],
     checkNum: o['Check Num'], paymentAmt: o['Payment Amt'],
-    comments: o['Comments'], signedBy: o['Signed By']
+    comments: o['Comments'], signedBy: o['Signed By'],
+    sigData: o['Signature Data'] || ''
   }, o['WO Number'] || 'WO');
 }
 
