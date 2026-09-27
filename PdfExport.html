@@ -134,10 +134,20 @@ function generatePdf(data, woNum) {
   y += 10;
   if (y > 680) { doc.addPage(); y = 50; }
   doc.setFont('helvetica','bold'); doc.setFontSize(9);
-  doc.text('Customer Signature:', lm, y); y += 8;
-  // Signatures are not stored — draw empty box for office-printed copies
-  doc.setDrawColor(180); doc.rect(lm, y, 200, 55); y += 63;
+  doc.text('Customer Acknowledgment:', lm, y); y += lineH;
+  doc.setDrawColor(0); doc.setLineWidth(1);
+  doc.rect(lm, y-9, 10, 10);
+  if (data.customerAcknowledged) {
+    doc.setDrawColor(26,74,122); doc.setLineWidth(1.5);
+    doc.line(lm+2, y-4, lm+4, y-1);
+    doc.line(lm+4, y-1, lm+9, y-8);
+    doc.setDrawColor(0); doc.setLineWidth(1);
+  }
+  doc.setFont('helvetica','normal'); doc.setFontSize(8.5);
+  doc.text('Customer confirms work was completed to their satisfaction and authorizes the charges listed.', lm+14, y);
+  y += lineH + 6;
   doc.line(lm, y, lm+200, y); y += 14;
+  doc.setFont('helvetica','bold'); doc.setFontSize(9);
   doc.text('Printed Name: ' + String(data.signedBy||''), lm, y); y += lineH;
   doc.setFont('helvetica','normal'); doc.setFontSize(8); doc.setTextColor(120);
   doc.text('S.O.S. Septic, Inc. — sosseptic.com — Englewood, FL', lm, y);

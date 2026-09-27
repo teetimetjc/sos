@@ -90,9 +90,9 @@ function exportRowAsPdf() {
     terms:       fmtVal(raw['Terms']),
     checkNum:    fmtVal(raw['Check Num']),
     paymentAmt:  fmtVal(raw['Payment Amt']),
-    comments:    fmtVal(raw['Comments']),
-    signedBy:    fmtVal(raw['Signed By']),
-    sigData:     raw['Signature Data'] || ''
+    comments:             fmtVal(raw['Comments']),
+    signedBy:             fmtVal(raw['Signed By']),
+    customerAcknowledged: raw['Signature Data'] === 'Yes'
   };
 
   var woNum = fmtVal(raw['WO Number']) || 'WO-?????';
@@ -192,7 +192,7 @@ function saveOrder(data) {
     data.signedBy || '',
     now.toISOString(),
     data.clientEmail || '',
-    data.sigData || ''
+    data.customerAcknowledged ? 'Yes' : ''
   ]);
   return woNum;
 }
