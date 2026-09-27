@@ -530,6 +530,7 @@ var sigPad         = { drawing: false, lastX: 0, lastY: 0 };
 var allOrders      = [];
 var allCallIns     = [];
 var lineItemCounter = 0;
+var pendingPdf     = null; // holds { data, woNum } for the Download PDF button
 
 // ── Init ──
 var canvas, ctx;
@@ -764,8 +765,9 @@ function saveWorkOrder() {
       }
       var wasEdit = !!editingId;
       var woNum   = data.woNumber || editingWoNum;
+      pendingPdf  = { data: payload, woNum: woNum };
       succBanner.innerHTML = (wasEdit ? 'Updated! ' : 'Saved! ') + escHtml(woNum) +
-        ' &nbsp;<button onclick="generatePdf(' + escHtml(JSON.stringify(payload)) + ',' + escHtml(JSON.stringify(woNum)) + ')" ' +
+        ' &nbsp;<button onclick="generatePdf(pendingPdf.data, pendingPdf.woNum)" ' +
         'style="padding:4px 12px;background:#1a4a7a;color:#fff;border:none;border-radius:5px;font-weight:700;font-size:.82rem;cursor:pointer">Download PDF</button>';
       succBanner.style.display = 'block';
       succBanner.scrollIntoView({ behavior: 'smooth' });
