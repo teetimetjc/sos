@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: Arial, sans-serif; background: #f0f4f8; display: flex; align-items: center; justify-content: center; height: 100vh; }
+  .card { background: #fff; border-radius: 10px; padding: 32px 36px; box-shadow: 0 2px 12px rgba(0,0,0,.12); text-align: center; width: 380px; }
+  h2 { color: #1a4a7a; font-size: 1.3rem; margin-bottom: 4px; }
+  .wo { color: #555; font-size: .95rem; margin-bottom: 24px; }
+  .wo strong { color: #1a4a7a; }
+  .btn { background: #1a4a7a; color: #fff; border: none; border-radius: 6px; padding: 13px 32px; font-size: 1rem; font-weight: 700; cursor: pointer; width: 100%; }
+  .btn:hover { background: #163d66; }
+  .note { color: #888; font-size: .78rem; margin-top: 14px; line-height: 1.5; }
+  .err { color: #c00; font-size: .82rem; margin-top: 10px; display: none; }
+</style>
+</head>
+<body>
+<div class="card">
+  <h2>S.O.S. Septic, Inc.</h2>
+  <p class="wo">Work Order: <strong><?= woNum ?></strong></p>
+  <button class="btn" onclick="doDownload()">&#8595; Download PDF</button>
+  <p class="note">PDF saves to your Downloads folder.<br>Attach it to an email from your @sosseptic.com account.</p>
+  <p class="err" id="errMsg"></p>
+</div>
+
+<script>
+var DATA  = <?!= rowData ?>;
+var WONUM = <?!= JSON.stringify(woNum) ?>;
+
+function doDownload() {
+  try {
+    generatePdf(DATA, WONUM);
+  } catch(e) {
+    var el = document.getElementById('errMsg');
+    el.textContent = 'Error: ' + e.message;
+    el.style.display = 'block';
+  }
+}
+
+function generatePdf(data, woNum) {
+  var doc = new jspdf.jsPDF({ unit: 'pt', format: 'letter' });
+  var lm = 50, rm = 562, y = 50, lineH = 18;
+
+  function pdfLine(label, val, x1, x2) {
+    doc.setFont('helvetica','bold'); doc.setFontSize(9); doc.text(label, x1, y);
+    doc.setFont('helvetica','normal'); doc.text(String(val||''), x2, y);
+    y += lineH;
+  }
+  function section(title) {
+    y += 6;
+    doc.setFillColor(26,74,122); doc.rect(lm, y-12, rm-lm, 16, 'F');
+    doc.setTextColor(255,255,255); doc.setFont('helvetica','bold'); doc.setFontSize(10);
+    doc.text(title, lm+4, y); doc.setTextColor(0,0,0); y += lineH;
+  }
+
+  // Header
+  doc.setFont('helvetica','bold'); doc.setFontSize(18); doc.setTextColor(26,74,122);
+  doc.text('S.O.S. Septic, Inc.', lm, y); y += 22;
+  doc.setFontSize(10); doc.setTextColor(80,80,80);
+  doc.text('sosseptic.com  •  Englewood, FL', lm, y); y += 16;
+  doc.setFont('helvetica','bold'); doc.setFontSize(14); doc.setTextColor(0,0,0);
+  doc.text((data.type || 'Septic') + ' Work Order', lm, y);
+  doc.setFontSize(12); doc.text(woNum, rm - doc.getTextWidth(woNum), y); y += 22;
+  doc.setDrawColor(180,180,180); doc.line(lm, y, rm, y); y += 14;
+
+  section('Customer & Job Information');
+  pdfLine('Bill To:', data.billTo, lm, lm+80);
+  pdfLine('Job Address:', data.job, lm, lm+80);
+  pdfLine('Phone 1:', data.phone1, lm, lm+80);
+  if (data.phone2) pdfLine('Phone 2:', data.phone2, lm, lm+80);
+  if (data.clientEmail) pdfLine('Email:', data.clientEmail, lm, lm+80);
+
+  section('Job Details');
+  var col2 = (lm + rm) / 2 + 10;
+  doc.setFont('helvetica','bold'); doc.setFontSize(9);
+  doc.text('Date:', lm, y); doc.setFont('helvetica','normal'); doc.text(String(data.date||''), lm+40, y);
+  doc.setFont('helvetica','bold'); doc.text('Time:', col2, y); doc.setFont('helvetica','normal'); doc.text(String(data.time||''), col2+40, y); y += lineH;
+  doc.setFont('helvetica','bold'); doc.text('Technician:', lm, y); doc.setFont('helvetica','normal'); doc.text(String(data.technician||''), lm+70, y); y += lineH;
+
+  if (data.type === 'Septic') {
+    doc.setFont('helvetica','bold'); doc.text('Pump Type:', lm, y); doc.setFont('helvetica','normal'); doc.text(String(data.pumpType||''), lm+70, y);
+    doc.setFont('helvetica','bold'); doc.text('Year Built:', col2, y); doc.setFont('helvetica','normal'); doc.text(String(data.yearBuilt||''), col2+60, y); y += lineH;
+    doc.setFont('helvetica','bold'); doc.text('Water Level:', lm, y); doc.setFont('helvetica','normal'); doc.text(String(data.waterLevel||''), lm+75, y);
+    doc.setFont('helvetica','bold'); doc.text('Scum:', col2, y); doc.setFont('helvetica','normal'); doc.text(String(data.scum||''), col2+35, y); y += lineH;
+    doc.setFont('helvetica','bold'); doc.text('Sludge:', lm, y); doc.setFont('helvetica','normal'); doc.text(String(data.sludge||''), lm+45, y);
+    doc.setFont('helvetica','bold'); doc.text('Tank Sound:', col2, y); doc.setFont('helvetica','normal'); doc.text(String(data.tankSound||''), col2+65, y); y += lineH;
+    doc.setFont('helvetica','bold'); doc.text('Compartment:', lm, y); doc.setFont('helvetica','normal'); doc.text(String(data.compartment||''), lm+78, y);
+    doc.setFont('helvetica','bold'); doc.text('Outlet T:', col2, y); doc.setFont('helvetica','normal'); doc.text(String(data.outletT||''), col2+50, y); y += lineH;
+    doc.setFont('helvetica','bold'); doc.text('Material:', lm, y); doc.setFont('helvetica','normal'); doc.text(String(data.material||''), lm+55, y);
+    doc.setFont('helvetica','bold'); doc.text('Drainfield:', col2, y); doc.setFont('helvetica','normal'); doc.text(String(data.drainfield||''), col2+60, y); y += lineH;
+  } else {
+    doc.setFont('helvetica','bold'); doc.text('Trap Location:', lm, y); doc.setFont('helvetica','normal'); doc.text(String(data.trapLocation||''), lm+82, y); y += lineH;
+  }
+
+  if (data.directions) {
+    doc.setFont('helvetica','bold'); doc.text('Directions:', lm, y); y += lineH;
+    doc.setFont('helvetica','normal'); doc.setFontSize(8);
+    var dLines = doc.splitTextToSize(data.directions, rm-lm-10);
+    doc.text(dLines, lm+10, y); y += dLines.length * 13; doc.setFontSize(9);
+  }
+
+  section('Services & Charges');
+  var colW = [260, 80, 90]; var cx = lm;
+  doc.setFont('helvetica','bold'); doc.setFontSize(9);
+  ['Description','Gallons','Amount'].forEach(function(h,i){ doc.text(h, cx, y); cx += colW[i]; });
+  y += 4; doc.setDrawColor(200,200,200); doc.line(lm, y, rm, y); y += 12;
+  doc.setFont('helvetica','normal');
+  (data.lineItems||[]).forEach(function(it) {
+    cx = lm;
+    doc.text(String(it.label||''), cx, y); cx += colW[0];
+    doc.text(String(it.gallons||''), cx, y); cx += colW[1];
+    doc.text(it.amount ? '$'+parseFloat(it.amount).toFixed(2) : '', cx, y); y += lineH;
+  });
+  y += 4; doc.line(lm, y, rm, y); y += 14;
+  doc.setFont('helvetica','bold'); doc.setFontSize(11);
+  var totalStr = 'Total: $' + (parseFloat(data.total)||0).toFixed(2);
+  doc.text(totalStr, rm - doc.getTextWidth(totalStr), y); y += 22;
+
+  section('Payment');
+  doc.setFontSize(9);
+  pdfLine('Billing:', data.billing, lm, lm+55);
+  pdfLine('Terms:',   data.terms,   lm, lm+55);
+  if (data.checkNum)   pdfLine('Check #:',  data.checkNum,        lm, lm+55);
+  if (data.paymentAmt) pdfLine('Payment:',  '$'+data.paymentAmt,  lm, lm+55);
+  if (data.comments) {
+    doc.setFont('helvetica','bold'); doc.text('Comments:', lm, y); y += lineH;
+    doc.setFont('helvetica','normal');
+    var cLines = doc.splitTextToSize(data.comments, rm-lm-10);
+    doc.text(cLines, lm+10, y); y += cLines.length * 13;
+  }
+
+  y += 10;
+  if (y > 680) { doc.addPage(); y = 50; }
+  doc.setFont('helvetica','bold'); doc.setFontSize(9);
+  doc.text('Customer Signature:', lm, y); y += 8;
+  // Signatures are not stored — draw empty box for office-printed copies
+  doc.setDrawColor(180); doc.rect(lm, y, 200, 55); y += 63;
+  doc.line(lm, y, lm+200, y); y += 14;
+  doc.text('Printed Name: ' + String(data.signedBy||''), lm, y); y += lineH;
+  doc.setFont('helvetica','normal'); doc.setFontSize(8); doc.setTextColor(120);
+  doc.text('S.O.S. Septic, Inc. — sosseptic.com — Englewood, FL', lm, y);
+
+  doc.save(woNum + '_' + (data.billTo||'WO').replace(/[^a-zA-Z0-9]/g,'_') + '.pdf');
+}
+</script>
+</body>
+</html>

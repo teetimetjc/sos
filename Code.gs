@@ -23,6 +23,83 @@ var CALLIN_SHEET = 'CallIns';
 //   Technicians | Extra Time | Price | Overfull | Field Runback |
 //   Payment Type | Billing Type | Saved At
 
+// --------------- Spreadsheet menu ---------------
+
+function onOpen() {
+  SpreadsheetApp.getUi()
+    .createMenu('SOS Tools')
+    .addItem('Export Selected Row as PDF', 'exportRowAsPdf')
+    .addToUi();
+}
+
+function exportRowAsPdf() {
+  var ui    = SpreadsheetApp.getUi();
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
+  if (!sheet) { ui.alert('WorkOrders sheet not found.'); return; }
+
+  var row = sheet.getActiveRange().getRow();
+  if (row < 2) {
+    ui.alert('Please click on a work order row first (not the header row).');
+    return;
+  }
+
+  var lastCol  = sheet.getLastColumn();
+  var headers  = sheet.getRange(1, 1, 1, lastCol).getValues()[0];
+  var values   = sheet.getRange(row, 1, 1, lastCol).getValues()[0];
+  var raw = {};
+  headers.forEach(function(h, i) { raw[h] = values[i]; });
+
+  function fmtVal(v) {
+    if (!v && v !== 0) return '';
+    if (v instanceof Date) return Utilities.formatDate(v, Session.getScriptTimeZone(), 'MM/dd/yyyy');
+    return String(v);
+  }
+
+  var lineItems = [];
+  try { lineItems = JSON.parse(raw['Line Items JSON'] || '[]'); } catch(e) {}
+
+  var data = {
+    type:        fmtVal(raw['Type']),
+    date:        fmtVal(raw['Date']),
+    time:        fmtVal(raw['Time']),
+    billTo:      fmtVal(raw['Bill To']),
+    job:         fmtVal(raw['Job']),
+    phone1:      fmtVal(raw['Phone 1']),
+    phone2:      fmtVal(raw['Phone 2']),
+    clientEmail: fmtVal(raw['Client Email']),
+    technician:  fmtVal(raw['Technician']),
+    pumpType:    fmtVal(raw['Pump Type']),
+    yearBuilt:   fmtVal(raw['Year Built']),
+    waterLevel:  fmtVal(raw['Water Level']),
+    drainfield:  fmtVal(raw['Drainfield']),
+    scum:        fmtVal(raw['Scum']),
+    sludge:      fmtVal(raw['Sludge']),
+    tankSound:   fmtVal(raw['Tank Sound']),
+    compartment: fmtVal(raw['Compartment']),
+    outletT:     fmtVal(raw['Outlet T']),
+    material:    fmtVal(raw['Material']),
+    trapLocation:fmtVal(raw['Trap Location']),
+    directions:  fmtVal(raw['Directions']),
+    lpo:         fmtVal(raw['LPO']),
+    nextPump:    fmtVal(raw['Next Pump']),
+    specialNotes:fmtVal(raw['Special Notes']),
+    lineItems:   lineItems,
+    total:       fmtVal(raw['Total']),
+    billing:     fmtVal(raw['Billing']),
+    terms:       fmtVal(raw['Terms']),
+    checkNum:    fmtVal(raw['Check Num']),
+    paymentAmt:  fmtVal(raw['Payment Amt']),
+    comments:    fmtVal(raw['Comments']),
+    signedBy:    fmtVal(raw['Signed By'])
+  };
+
+  var woNum = fmtVal(raw['WO Number']) || 'WO-?????';
+  var tmpl  = HtmlService.createTemplateFromFile('PdfExport');
+  tmpl.rowData = JSON.stringify(data);
+  tmpl.woNum   = woNum;
+  ui.showModalDialog(tmpl.evaluate().setWidth(480).setHeight(300), 'Export Work Order — ' + woNum);
+}
+
 // --------------- HTTP entry points ---------------
 
 function doGet(e) {
