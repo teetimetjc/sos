@@ -333,6 +333,16 @@ function seedSalaryData() {
       notes:     'Salary from search index — verify on listing',
       status:    'Active'
     },
+    {
+      title:     'Director, Data Analytics',
+      dateSeen:  '2026-10-07',
+      location:  'Chicago, IL',
+      payMin:    145000,
+      payMax:    165000,
+      url:       'https://jobs.greystar.com/job/chicago/director-data-analytics/35302/101372473088',
+      notes:     'Closest match to target role; posted Sep 30 2026, closes Nov 4 2026',
+      status:    'Active'
+    },
   ];
 
   var ss    = SpreadsheetApp.getActiveSpreadsheet();
